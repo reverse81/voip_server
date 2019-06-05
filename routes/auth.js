@@ -26,11 +26,9 @@ var mongo = require("../lib/database");
         console.log("not found");
         res.send(404)
       }else{
-        // console.log(result.toArray());
         var user = { id: request.body.email };
         var token = jwt.sign(user, 'TEAM_HAPPY');
-        console.log(user, token);
-
+      
         res.send({"endpoint": "/users", "token": token});
       }
     })
