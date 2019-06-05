@@ -28,32 +28,12 @@ var mongo = require("../lib/database");
       }else{
         var user = { id: request.body.email };
         var token = jwt.sign(user, 'TEAM_HAPPY');
-      
+
         res.send({"endpoint": "/users", "token": token});
       }
     })
 
   });
 
-  router.get('/signup', function (request, res, next) {
-
-    res.render('signup', { session:request.session });
-  });
-
-  router.post('/signup', function (request, res, next) {
-    //TODO: phone number generator,
-    var phone_number = "070123456"
-    var myobj = { "_id": phone_number, "email": request.body.email, "pwd":request.body.pwd, "phone": phone_number, "ip":"0.0.0.0"}
-
-    var user_db = mongo.UserDB();
-    var allinventory = user_db.find({}).toArray(function(err, result){
-      console.log(result);
-    })
-    user_db.insertOne(myobj, function(err, result){
-      if(err) throw err;
-      console.log("inserted");
-      res.redirect('/')
-    })
-  });
 
   module.exports = router;

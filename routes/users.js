@@ -28,12 +28,6 @@ router.get('/create', function (request, res, next) {
   res.render('signup', { session:request.session });
 });
 
-function getCount(){
-  return new Promise(function(resolve, reject){
-    user_db = mongo.UserDB();
-    resolve(user_db.stats().count);
-  })
-}
 router.post("/create", function(req, res, next){
   user_db = mongo.UserDB();
   var phone_number = parseInt(0701234567);
