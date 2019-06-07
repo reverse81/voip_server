@@ -27,7 +27,7 @@ var mongo = require("../lib/database");
         res.send(404)
       }else{
         var user = { id: request.body.email };
-        var token = jwt.sign(user, 'TEAM_HAPPY');
+        var token = jwt.sign(user, '');
 
         res.send({"endpoint": "/users", "token": token});
       }
