@@ -7,15 +7,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var database;
-var user_db = {
-  "mongo": null
-};
-
-var mongo = require("./lib/database");
+var mongo = require("./data/database");
 mongo.connectDB();
-// database = mongo.database();
-user_db = mongo.UserDB();
 
 var app = express();
 
