@@ -4,36 +4,36 @@ var path = require('path');
 var fs = require('fs');
 var sanitizeHtml = require('sanitize-html');
 const session = require('express-session');
-
+var database = require('../data/dataCrypto')
+require('dotenv').config();
 var jwt = require('jsonwebtoken');
-
-var mongo = require("../lib/database");
-
+var privatekey = process.SECRET_KEY;
 
 
-  router.get('/login', function (request, res, next) {
-    res.render('login', { session:request.session });
-  });
+router.get('/login', function (request, res, next) {
+  res.render('login', { session:request.session });
+});
 
-  router.post('/login', function(request, res, next){
-    var user_db = mongo.UserDB();
-    var usercursur = user_db.find({
-      email: request.body.email,
-      pwd: request.body.pwd
-    })
-    .toArray(function(err, result){
-      if(result.length == 0){
-        console.log("not found");
-        res.send(404)
-      }else{
-        var user = { id: request.body.email };
-        var token = jwt.sign(user, '');
+router.post('/login', function(request, res, next){
+  console.log("login");
+  console.log(request.body);
 
-        res.send({"endpoint": "/users", "token": token});
-      }
-    })
-
-  });
+  var usercursur = database.findUser({
+    email: request.body.email,
+    pwd: request.body.pwd
+  }).then(function(data){
+    console.log(data);
+    if(data !== null){
+      var user = { id: request.body.email };
+      var token = jwt.sign(user, privatekey);
+      console.log(token);
+      res.send({"token": token});
+    }else{
+      console.log("login error");
+      res.send("Login Error")
+    }
+  })
+});
 
 
   module.exports = router;

@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-var mongo = require("../lib/database");
+var mongo = require("../data/database");
+var cryptoData = require("../data/dataCrypto");
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -17,11 +18,15 @@ router.get('/all', function(req, res, next){
 });
 
 router.get('/ip', function(req, res, next){
-  res.send("ip adress")
+  cryptoData.findUser({email:req.body.email}).then(function(data){
+    res.send(data.ip);
+  });
 });
 
 router.post('/ip', function(req, res, next){
-  res.send("ip adress")
+  cryptoData.findUser({email:req.body.email}).then(function(data){
+
+  });
 });
 
 router.get('/create', function (request, res, next) {
@@ -29,15 +34,10 @@ router.get('/create', function (request, res, next) {
 });
 
 router.post("/create", function(req, res, next){
-  user_db = mongo.UserDB();
-  var phone_number = parseInt(0701234567);
-  user_db.find({email:{$eq: req.body.email}}).toArray(function(err, result){
-    if(result.length > 0){
-      res.send("already added.")
-    }else{
-      user_db.stats(function(err, result){
-        user_db.find({}).toArray(function(err, re){
-          next_id = re[result.count-1]._id+1;
+  var phone_number = Number(0701234567);
+  cryptoData.findUser({email:req.body.email}).then(function(data){
+    if(data == null){
+        cryptoData.findUserId(data).then(function(next_id){
           var myobj = {
             _id: next_id,
             email: req.body.email,
@@ -47,18 +47,15 @@ router.post("/create", function(req, res, next){
             permission: "users",
             status: "enable"};
 
-          user_db.insertOne(myobj, function(err, result){
-            if(err) throw err;
-            console.log("inserted");
-            res.send(myobj);
+          cryptoData.saveUser(myobj).then(function(data){
+            res.send(200, "success")
           })
         });
-      })
+
+    }else{
+      res.send("User duplicated.");
     }
   })
-
-
-
 })
 
 
