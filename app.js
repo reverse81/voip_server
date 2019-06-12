@@ -4,8 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
 var mongo = require("./data/database");
 mongo.connectDB();
@@ -24,7 +22,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var authRouter = require('./routes/auth');
+var passport = require('./lib/passport')(app);
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users')(passport);
+var authRouter = require('./routes/auth')(passport);
 var adminRouter = require('./routes/admin');
 
 app.use('/', indexRouter);
