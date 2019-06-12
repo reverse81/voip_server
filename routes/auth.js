@@ -8,32 +8,55 @@ var database = require('../data/dataCrypto')
 require('dotenv').config();
 var jwt = require('jsonwebtoken');
 var privatekey = process.SECRET_KEY;
+var mycrypto = require("../lib/cryptoAlgorithms");
 
+module.exports = function (passport) {
+  router.get('/login', function (request, res, next) {
+    res.render('login', { session:request.session });
+  });
 
-router.get('/login', function (request, res, next) {
-  res.render('login', { session:request.session });
-});
+  router.post('/login', function(request, res, next){
+    var user = mycrypto.decrypt("KKF2QT4fwpMeJf36POk6yJVHTAEPAPMY", request.body.hashed_string);
+    // console.log(typeof request.body.hashed_string);
+    user = JSON.parse(user);
+    var usercursur = database.findUser({
+      email: user.email,
+      pwd: user.pwd
+    }).then(function(data){
+      console.log(data);
+      if(data !== null){
+        var message = { id: user.email, message: "it makes from miya"};
+        var token = jwt.sign(message, "makefrommiya");
+        console.log(token);
+        res.send({"token": token});
+      }else{
+        console.log("login error");
+        res.send("Login Error")
+      }
+    })
+  });
+  return router;
+}
 
-router.post('/login', function(request, res, next){
-  console.log("login");
-  console.log(request.body);
+//
+// router.post('/login', function(request, res, next){
+//   console.log("crypto", mycrypto.decrypt("KKF2QT4fwpMeJf36POk6yJVHTAEPAPMY", request.body.hashed_string));
+//   var usercursur = database.findUser({
+//     email: request.body.email,
+//     pwd: request.body.pwd
+//   }).then(function(data){
+//     console.log(data);
+//     if(data !== null){
+//       var user = { id: request.body.email };
+//       var token = jwt.sign(user, privatekey);
+//       console.log(token);
+//       res.send({"token": token});
+//     }else{
+//       console.log("login error");
+//       res.send("Login Error")
+//     }
+//   })
+// });
 
-  var usercursur = database.findUser({
-    email: request.body.email,
-    pwd: request.body.pwd
-  }).then(function(data){
-    console.log(data);
-    if(data !== null){
-      var user = { id: request.body.email };
-      var token = jwt.sign(user, privatekey);
-      console.log(token);
-      res.send({"token": token});
-    }else{
-      console.log("login error");
-      res.send("Login Error")
-    }
-  })
-});
-
-
-  module.exports = router;
+// console.log(data);
+  // module.exports = router;
