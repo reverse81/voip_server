@@ -23,7 +23,11 @@ module.exports = {
     return database.saveUser(data);
   },
   findUserId: function(data){
+
     return database.findUserId(data);
+  },
+  allUser: function(){
+    return database.allUser();
   }
 
 }

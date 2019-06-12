@@ -63,6 +63,14 @@ module.exports = {
   },
   updateUser: function(email, data){
     database.users.findOneAndUpdate(email, data)
+  },
+  allUser: function(){
+    return new Promise(function (resolve, reject){
+      database.users.find({}, function(err, result){
+        if(err) throw err;
+        resolve(result);
+      })
+    })
   }
 
 }
