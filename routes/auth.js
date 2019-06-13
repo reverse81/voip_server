@@ -23,11 +23,12 @@ module.exports = function (passport) {
       email: user.email,
       pwd: user.pwd
     }).then(function(data){
-      console.log(data);
+
       if(data !== null){
-        var message = { id: user.email, message: "it makes from miya"};
+        var message = { id: user.email, permission: data.permission, message: "it makes from miya"};
+        console.log("message", message);
         var token = jwt.sign(message, "makefrommiya");
-        console.log(token);
+      
         res.send({"token": token});
       }else{
         console.log("login error");

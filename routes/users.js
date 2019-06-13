@@ -24,21 +24,22 @@ module.exports = function (passport) {
   //TODO: permission check. user or admin
   function checkPermission(permission) {
       return function(req,res,next) {
-        return passport.authenticate('jwt', {session:false}), (req, res, function(){
-          return next();
-        })
+          return passport.authenticate('jwt',{ session: false })(req,res,function() {
+              return next();
+          });
       }
   }
 
+
   function getip(req,res){
-    cryptoData.findUser({email:req.user}).then(function(data){
+    cryptoData.findUser({email:req.user.email}).then(function(data){
       console.log(data);
       res.send(data.ip);
     });
 
   }
-
-  router.get('/ip',  passport.authenticate('jwt', {session:false}), getip);
+// passport.authenticate('jwt', {session:false})
+  router.get('/ip', checkPermission("user"), getip);
 
   router.post('/ip', function(req, res, next){
     cryptoData.findUser({email:req.body.email}).then(function(data){
@@ -76,7 +77,7 @@ module.exports = function (passport) {
 
 
   router.post("/recovery", function(req, res, next){
-    
+
   });
 
 
