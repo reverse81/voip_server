@@ -21,15 +21,19 @@ module.exports = function (passport) {
       });
   });
 
-  //TODO: permission check. user or admin
   function checkPermission(permission) {
       return function(req,res,next) {
           return passport.authenticate('jwt',{ session: false })(req,res,function() {
+            if(permission == req.user.permission){
+                return next();
+            }else if(permission == "all"){
               return next();
+            }else{
+              return res.send("Unauthorized");
+            }
           });
       }
   }
-
 
   function getip(req,res){
     cryptoData.findUser({email:req.user.email}).then(function(data){
@@ -39,12 +43,12 @@ module.exports = function (passport) {
 
   }
 // passport.authenticate('jwt', {session:false})
-  router.get('/ip', checkPermission("user"), getip);
+  router.get('/ip', checkPermission("all"), getip);
 
-  router.post('/ip', function(req, res, next){
-    cryptoData.findUser({email:req.body.email}).then(function(data){
-    });
-  });
+  function saveip(req, res){
+    res.send("success")
+  }
+  router.post('/ip', checkPermission("all"), saveip);
 
   router.get('/create', function (request, res, next) {
     res.render('signup', { session:request.session });
@@ -76,12 +80,12 @@ module.exports = function (passport) {
   });
 
 
-  router.post("/recovery", function(req, res, next){
+  router.post("/recovery", checkPermission("all"), function(req, res, next){
 
   });
 
 
-  router.post("/update", passport.authenticate('jwt', {session:false}), function(req, res, next){
+  router.post("/update", checkPermission("all"), function(req, res, next){
     // user_db.findOneAndUpdate(obj, function(err,doc) {
     //        if (err) { throw err; }
     //        else { console.log("Updated"); }
@@ -90,7 +94,7 @@ module.exports = function (passport) {
 
 
   //TODO: user cant delete user info. permission check
-  router.delete("/delete", function(req, res, next){
+  router.delete("/delete", checkPermission("admin"), function(req, res, next){
 
   });
 

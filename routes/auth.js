@@ -15,20 +15,22 @@ module.exports = function (passport) {
     res.render('login', { session:request.session });
   });
 
-  router.post('/login', function(request, res, next){
-    var user = mycrypto.decrypt("KKF2QT4fwpMeJf36POk6yJVHTAEPAPMY", request.body.hashed_string);
-    // console.log(typeof request.body.hashed_string);
-    user = JSON.parse(user);
+  router.post('/login',
+  function(req, res, next){
+   var user = JSON.parse(mycrypto.decrypt("KKF2QT4fwpMeJf36POk6yJVHTAEPAPMY", req.body.hashed_string));
+       req.email = user.email;
+       req.pwd = user.pwd;
+       next();
+   },
+   function(req, res, next){
     var usercursur = database.findUser({
-      email: user.email,
-      pwd: user.pwd
+      email: req.email,
+      pwd: req.pwd
     }).then(function(data){
-
       if(data !== null){
-        var message = { id: user.email, permission: data.permission, message: "it makes from miya"};
+        var message = { id: req.email, permission: data.permission, message: "it makes from miya"};
         console.log("message", message);
-        var token = jwt.sign(message, "makefrommiya");
-      
+        var token = jwt.sign(message, "makefrommiya",{ expiresIn:'12h'});
         res.send({"token": token});
       }else{
         console.log("login error");
@@ -38,26 +40,3 @@ module.exports = function (passport) {
   });
   return router;
 }
-
-//
-// router.post('/login', function(request, res, next){
-//   console.log("crypto", mycrypto.decrypt("KKF2QT4fwpMeJf36POk6yJVHTAEPAPMY", request.body.hashed_string));
-//   var usercursur = database.findUser({
-//     email: request.body.email,
-//     pwd: request.body.pwd
-//   }).then(function(data){
-//     console.log(data);
-//     if(data !== null){
-//       var user = { id: request.body.email };
-//       var token = jwt.sign(user, privatekey);
-//       console.log(token);
-//       res.send({"token": token});
-//     }else{
-//       console.log("login error");
-//       res.send("Login Error")
-//     }
-//   })
-// });
-
-// console.log(data);
-  // module.exports = router;

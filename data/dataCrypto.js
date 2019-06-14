@@ -5,7 +5,6 @@ var mycrypto = require('../lib/cryptoAlgorithms')
 
 module.exports = {
   findUser: function(data){
-    console.log("findUser");
     for(var n in data){
       data[n] = mycrypto.encrypt("SHA256", data[n]);
     }
