@@ -34,6 +34,8 @@ app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/admin', adminRouter);
 
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
