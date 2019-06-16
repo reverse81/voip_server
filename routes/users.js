@@ -46,7 +46,17 @@ module.exports = function (passport) {
   router.get('/ip', checkPermission("all"), getip);
 
   function saveip(req, res){
-    res.send("success")
+    cryptoData.findUserIP({ip:req.body.ip}).then(function(data){
+      if(data !== null){
+        //같은 ip가 있음
+        res.send("fail")
+      }else{
+        //같은 ip가 없음.
+        res.send("success")
+      }
+
+    });
+
   }
   router.post('/ip', checkPermission("all"), saveip);
 
@@ -86,10 +96,7 @@ module.exports = function (passport) {
 
 
   router.post("/update", checkPermission("all"), function(req, res, next){
-    // user_db.findOneAndUpdate(obj, function(err,doc) {
-    //        if (err) { throw err; }
-    //        else { console.log("Updated"); }
-    //      });
+    
   });
 
 

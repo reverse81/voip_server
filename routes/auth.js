@@ -17,26 +17,21 @@ module.exports = function (passport) {
 
   router.post('/login',
   function(req, res, next){
+    //TODO:
    var user = JSON.parse(mycrypto.decrypt("KKF2QT4fwpMeJf36POk6yJVHTAEPAPMY", req.body.hashed_string));
-       req.email = user.email;
-       req.pwd = user.pwd;
+       req.body.email = user.email;
+       req.body.pwd = user.pwd;
        next();
    },
    function(req, res, next){
-    var usercursur = database.findUser({
-      email: req.email,
-      pwd: req.pwd
-    }).then(function(data){
-      if(data !== null){
-        var message = { id: req.email, permission: data.permission, message: "it makes from miya"};
-        console.log("message", message);
-        var token = jwt.sign(message, "makefrommiya",{ expiresIn:'12h'});
-        res.send({"token": token});
-      }else{
-        console.log("login error");
-        res.send("Login Error")
-      }
-    })
+    passport.authenticate('local', function(err, user, info) {
+      if (err) { return next(err); }
+      if (!user) { return res.send(404, "Not Found"); }
+      var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
+      return res.send(200, {"token": token})
+
+    })(req, res, next);
+
   });
   return router;
 }
