@@ -21,6 +21,7 @@ module.exports = function (passport) {
    var user = JSON.parse(mycrypto.decrypt("KKF2QT4fwpMeJf36POk6yJVHTAEPAPMY", req.body.hashed_string));
        req.body.email = user.email;
        req.body.pwd = user.pwd;
+       console.log("hashed", user);
        next();
    },
    function(req, res, next){
@@ -29,7 +30,6 @@ module.exports = function (passport) {
       if (!user) { return res.send(404, "Not Found"); }
       var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
       return res.send(200, {"token": token})
-
     })(req, res, next);
 
   });

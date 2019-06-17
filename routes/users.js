@@ -11,8 +11,8 @@ module.exports = function (passport) {
     res.render('users', { title: 'User Management' });
   });
 
-  router.get('/all',
-    passport.authenticate('jwt', {session:false}), function(req, res, next){
+  router.get('/all',checkPermission("all"),
+  function(req, res, next){
       cryptoData.allUser().then(function(data){
         data.toArray(function(err, result){
           console.log(result);
@@ -42,7 +42,7 @@ module.exports = function (passport) {
     });
 
   }
-// passport.authenticate('jwt', {session:false})
+
   router.get('/ip', checkPermission("all"), getip);
 
   function saveip(req, res){
@@ -65,7 +65,7 @@ module.exports = function (passport) {
   });
 
   router.post("/create", function(req, res, next){
-    var phone_number = Number(0701234567);
+    var phone_number = Number(1234567891);
     cryptoData.findUser({email:req.body.email}).then(function(data){
       if(data == null){
           cryptoData.findUserId(data).then(function(next_id){
@@ -89,20 +89,37 @@ module.exports = function (passport) {
     });
   });
 
-
-  router.post("/recovery", checkPermission("all"), function(req, res, next){
-
+  router.post("/recovery", function(req, res, next){
+    var pwdGen = require('../lib/pwdgenerator')
+    var email = require('../lib/email')
+    var newPwd = pwdGen.password_generator(12);
+    var database = require("../data/database")
+    //TODO: phone_number, email adress check
+    if(true){
+      cryptoData.findUser({email:req.body.email, phone:parseInt(req.body.phone)}).then(function(data){
+        // email.sendMail(req.body.email, newPwd);
+        // res.send({phone: req.body.phone, new_pwd: newPwd});
+        console.log("finddata: ", data);
+        myobj = {
+          email:req.body.email,
+          pwd:newPwd
+        }
+        cryptoData.updatePwd({email:req.body.email}, newPwd).then(function(data){
+          res.send(200, data)
+        })
+      });
+    }
   });
 
 
   router.post("/update", checkPermission("all"), function(req, res, next){
-    
+
   });
 
 
   //TODO: user cant delete user info. permission check
-  router.delete("/delete", checkPermission("admin"), function(req, res, next){
-
+  router.post("/delete", checkPermission("admin"), function(req, res, next){
+    res.send("success")
   });
 
   return router;

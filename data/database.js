@@ -29,6 +29,7 @@ module.exports = {
   findUser: function(data){
     return new Promise(function (resolve, reject){
       database.users.findOne(data, function(err, result){
+        console.log("findUser: ", result);
         if(err) throw err;
         resolve(result);
       })
@@ -54,15 +55,25 @@ module.exports = {
   findUserId: function(data){
     return new Promise(function (resolve, reject){
       database.users.stats(function(err, result){
-        database.users.find({}).toArray(function(err, re){
-          next_id = re[result.count-1]._id+1;
-          resolve(next_id);
-        })
+        if(result.count == 0){
+          resolve(0);
+        }else{
+          database.users.find({}).toArray(function(err, re){
+            next_id = re[result.count-1]._id+1;
+            resolve(next_id);
+          })
+        }
       })
     })
   },
   updateUser: function(email, data){
-    database.users.findOneAndUpdate(email, data)
+    return new Promise(function (resolve, reject){
+      database.users.updateOne(email, {$set: {pwd:data}}, function(err,doc) {
+       if (err) { throw err; }
+       else { console.log("Updated"); resolve(doc)}
+     });
+
+    })
   },
   allUser: function(){
     return new Promise(function (resolve, reject){
