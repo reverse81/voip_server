@@ -30,7 +30,7 @@ module.exports = function (passport) {
       if (!user) { return res.send(404, "Not Found"); }
       console.log("login:", user);
       var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
-      return res.send(200, {"token": token})
+      return res.send(200, {"token": token, "phone":user.phone})
     })(req, res, next);
 
   });

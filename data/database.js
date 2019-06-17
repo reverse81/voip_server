@@ -29,7 +29,6 @@ module.exports = {
   findUser: function(data){
     return new Promise(function (resolve, reject){
       database.users.findOne(data, function(err, result){
-        console.log("findUser: ", result);
         if(err) throw err;
         resolve(result);
       })
@@ -66,15 +65,24 @@ module.exports = {
       })
     })
   },
-  updateUser: function(email, data){
+  findUserIP: function(data){
     return new Promise(function (resolve, reject){
-      database.users.updateOne(email, {$set: {pwd:data}}, function(err,doc) {
+      database.users.findOne(data, function(err, result){
+        if(err) throw err;
+        resolve(result);
+      })
+    })
+  },
+  updateUsers:function(filter, data){
+    return new Promise(function (resolve, reject){
+      console.log("update", data);
+      database.users.updateOne(filter, {$set: data}, function(err,doc) {
        if (err) { throw err; }
        else { console.log("Updated"); resolve(doc)}
      });
-
     })
   },
+
   allUser: function(){
     return new Promise(function (resolve, reject){
       database.users.find({}, function(err, result){

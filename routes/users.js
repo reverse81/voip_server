@@ -38,7 +38,7 @@ module.exports = function (passport) {
   function getip(req,res){
     cryptoData.findUser({email:req.user.email}).then(function(data){
       console.log(data);
-      res.send(data.ip);
+      res.send(200, {ip:data.ip});
     });
 
   }
@@ -48,15 +48,17 @@ module.exports = function (passport) {
   function saveip(req, res){
     cryptoData.findUserIP({ip:req.body.ip}).then(function(data){
       if(data !== null){
-        //같은 ip가 있음
-        res.send("fail")
+        cryptoData.updateUserIP({email:data.email}, {ip:"0.0.0.0"}).then(function(data){
+          cryptoData.updateUserIP({email:req.user.email}, {ip:req.body.ip}).then(function(data){
+            res.send(200, {result:"success"})
+          })
+        })
       }else{
-        //같은 ip가 없음.
-        res.send("success")
+        cryptoData.updateUserIP({email:req.user.email}, {ip:req.body.ip}).then(function(data){
+          res.send(200, {result:"success"})
+        })
       }
-
     });
-
   }
   router.post('/ip', checkPermission("all"), saveip);
 
@@ -79,7 +81,7 @@ module.exports = function (passport) {
               status: "enable"};
 
             cryptoData.saveUser(myobj).then(function(data){
-              res.send(200, "success")
+              res.send(200, {phone:myobj.phone})
             })
           });
 
@@ -113,6 +115,16 @@ module.exports = function (passport) {
 
 
   router.post("/update", checkPermission("all"), function(req, res, next){
+    console.log("test");
+    if(req.user.email == req.body.email){
+      cryptoData.updateUserIP({email:req.body.email}, {email:req.body.email, pwd:req.body.pwd}).then(function(data){
+          console.log("update: ", data.result);
+            res.send(200, "success")
+      })
+    }else{
+      res.send(404, "not authorized")
+    }
+
 
   });
 
