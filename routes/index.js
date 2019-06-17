@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('login', { title: 'VoIP' });
+  res.render('adminContent', { title: 'VoIP' });
 });
 
 module.exports = router;

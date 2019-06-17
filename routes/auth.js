@@ -28,10 +28,18 @@ module.exports = function (passport) {
     passport.authenticate('local', function(err, user, info) {
       if (err) { return next(err); }
       if (!user) { return res.send(404, "Not Found"); }
+      console.log("login:", user);
       var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
       return res.send(200, {"token": token})
     })(req, res, next);
 
   });
+
+  //TODO: temporary
+  router.post('/login_admin', function(req, res, next){
+    var user = {id:"miyachan84@gmail.com", permission:"admin", message: 'it makes from miya'}
+    var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
+    return res.send(200, {"token":token});
+  })
   return router;
 }

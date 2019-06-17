@@ -27,14 +27,14 @@ var passport = require('./lib/passport')(app);
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users')(passport);
 var authRouter = require('./routes/auth')(passport);
-var adminRouter = require('./routes/admin');
+// var adminRouter = require('./routes/admin');
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
-app.use('/admin', adminRouter);
+// app.use('/admin', adminRouter);
 
-app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+// app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
