@@ -7,7 +7,7 @@ const session = require('express-session');
 var database = require('../data/dataCrypto')
 require('dotenv').config();
 var jwt = require('jsonwebtoken');
-var privatekey = process.SECRET_KEY;
+var privatekey = process.env.SECRET_KEY;
 var mycrypto = require("../lib/cryptoAlgorithms");
 
 module.exports = function (passport) {

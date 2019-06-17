@@ -1,16 +1,18 @@
 
 
 var mongoClient = require('mongodb').MongoClient;
+require('dotenv').config();
+const MONGO_URI = process.env.MONGO_URI;
 
 var database = {
   "users": null,
   "schedules": null
 };
 //{ "_id" : "rid@naver.com", "email" : "rid@naver.com", "pwd" : "1234", "phone" : "010-1234-5678", "ip" : "0.0.0.1" }
-
+//mongodb+srv://miheui:<password>@cluster0-bwbkf.mongodb.net/test?retryWrites=true&w=majorityl
 module.exports = {
   connectDB: function(){
-      var databaseURL = 'mongodb://127.0.0.1:27017/VoIP';
+      var databaseURL = MONGO_URI;
       mongoClient.connect(databaseURL,
           function (err, cluster)
           {
@@ -24,7 +26,9 @@ module.exports = {
               database.schedules = temp.collection('schedules');
               const collection = cluster.db("VoIP").collection("users");
           }
+
       );
+
   },
   findUser: function(data){
     return new Promise(function (resolve, reject){
@@ -43,7 +47,11 @@ module.exports = {
   },
   saveUser: function(data){
     return new Promise(function (resolve, reject){
-      database.users.insertOne(data, function(err, result){
+//       db.products.insert(
+//    { item: "envelopes", qty : 100, type: "Clasp" },
+//    { writeConcern: { w: "majority" , wtimeout: 5000 } }
+// )
+      database.users.insertOne(data, {w: 1}, function(err, result){
         if(err) throw err;
         console.log("inserted");
         resolve(result);
