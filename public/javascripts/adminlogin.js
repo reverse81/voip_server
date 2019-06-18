@@ -3,7 +3,7 @@ $(function() {
       $.ajax({
         type: 'POST',
         url: '/auth/login_admin',
-        data : {email: $('#email').val(), pass:$('#password').val()},
+        data : {email: $('#email').val(), pwd:$('#password').val()},
         dataType : 'JSON',
         success : function(data, statut){
             $.ajax({

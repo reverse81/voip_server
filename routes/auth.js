@@ -36,10 +36,17 @@ module.exports = function (passport) {
   });
 
   //TODO: temporary
-  router.post('/login_admin', function(req, res, next){
-    var user = {id:"miyachan84@gmail.com", permission:"admin", message: 'it makes from miya'}
-    var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
-    return res.send(200, {"token":token});
+
+  router.post('/login_admin',
+    function(req, res, next){
+      console.log(req.body);
+      passport.authenticate('local', function(err, user, info) {
+        if (err) { return next(err); }
+        if (!user) { return res.send(404, "Not Found"); }
+        console.log("login admin================");
+        var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
+        return res.send(200, {"token":token});
+      })(req, res, next);
   })
   return router;
 }
