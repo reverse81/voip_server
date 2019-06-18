@@ -38,23 +38,21 @@ module.exports = {
       })
     })
   },
-
   deleteUser: function(data){
-    database.users.deleteOne(data, function(err, result){
-      if(err) throw err;
-      console.log("deleted");
-    });
+    return new Promise(function (resolve, reject){
+      database.users.deleteOne(data,{w: 1}, function(err, result){
+        if(err) throw err;
+        console.log("deleted");
+        resolve(result);
+      });
+    })
   },
   saveUser: function(data){
     return new Promise(function (resolve, reject){
-//       db.products.insert(
-//    { item: "envelopes", qty : 100, type: "Clasp" },
-//    { writeConcern: { w: "majority" , wtimeout: 5000 } }
-// )
       database.users.insertOne(data, {w: 1}, function(err, result){
         if(err) throw err;
         console.log("inserted");
-        resolve(result);
+        resolve(result.result);
       })
     })
 

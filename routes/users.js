@@ -101,13 +101,12 @@ module.exports = function (passport) {
       cryptoData.findUser({email:req.body.email, phone:parseInt(req.body.phone)}).then(function(data){
         // email.sendMail(req.body.email, newPwd);
         // res.send({phone: req.body.phone, new_pwd: newPwd});
-        console.log("finddata: ", data);
         myobj = {
           email:req.body.email,
           pwd:newPwd
         }
         cryptoData.updatePwd({email:req.body.email}, newPwd).then(function(data){
-          res.send(200, data)
+          res.send(200, myobj)
         })
       });
     }
@@ -119,7 +118,7 @@ module.exports = function (passport) {
     if(req.user.email == req.body.email){
       cryptoData.updateUserIP({email:req.body.email}, {email:req.body.email, pwd:req.body.pwd}).then(function(data){
           console.log("update: ", data.result);
-            res.send(200, "success")
+            res.send(200, {result:"ip update success"})
       })
     }else{
       res.send(404, "not authorized")
@@ -129,11 +128,13 @@ module.exports = function (passport) {
   });
 
 
-  //TODO: user cant delete user info. permission check
   router.post("/delete", checkPermission("admin"), function(req, res, next){
-    res.send("success")
+    const database = require("../data/database")
+    database.deleteUser({"phone":parseInt(req.body.phone)}).then(function(data){
+      console.log(data.result);
+      res.send(data.result)
+    })
   });
 
   return router;
 }
-// module.exports = router;
