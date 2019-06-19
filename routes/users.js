@@ -3,7 +3,7 @@ var router = express.Router();
 
 var mongo = require("../data/database");
 var cryptoData = require("../data/dataCrypto");
-
+var numGen = require('../lib/numGenerator')
 /* GET users listing. */
 
 module.exports = function (passport) {
@@ -36,9 +36,12 @@ module.exports = function (passport) {
   }
 
   function getip(req,res){
-    cryptoData.findUser({email:req.user.email}).then(function(data){
+    cryptoData.findUser({phone:parseInt(req.user.phone)}).then(function(data){
       console.log(data);
-      res.send(200, {ip:data.ip});
+      if(data){
+        res.send(200, {ip:data.ip});
+      }
+      res.send(400, "not exist")
     });
 
   }
@@ -75,7 +78,7 @@ module.exports = function (passport) {
               _id: next_id,
               email: req.body.email,
               pwd:req.body.pwd,
-              phone: phone_number+ parseInt(next_id),
+              phone: "080"+ numGen.makeNumber(3)+ numGen.leftPadWithZeros(next_id,4),
               ip: "0.0.0.0",
               permission: "users",
               status: "enable"};
@@ -92,13 +95,13 @@ module.exports = function (passport) {
   });
 
   router.post("/recovery", function(req, res, next){
-    var pwdGen = require('../lib/pwdgenerator')
+
     var email = require('../lib/email')
-    var newPwd = pwdGen.password_generator(12);
+    var newPwd = numGen.password_generator(12);
     var database = require("../data/database")
     //TODO: phone_number, email adress check
     if(true){
-      cryptoData.findUser({email:req.body.email, phone:parseInt(req.body.phone)}).then(function(data){
+      cryptoData.findUser({email:req.body.email, phone:req.body.phone}).then(function(data){
         // email.sendMail(req.body.email, newPwd);
         // res.send({phone: req.body.phone, new_pwd: newPwd});
         myobj = {
@@ -128,7 +131,7 @@ module.exports = function (passport) {
 
   router.post("/delete", checkPermission("admin"), function(req, res, next){
     const database = require("../data/database")
-    database.deleteUser({"phone":parseInt(req.body.phone)}).then(function(data){
+    database.deleteUser({"phone":req.body.phone}).then(function(data){
       console.log(data.result);
       res.send(data.result)
     })

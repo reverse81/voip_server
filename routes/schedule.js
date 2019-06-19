@@ -6,6 +6,7 @@ var jwt = require('jsonwebtoken');
 var privatekey = process.env.SECRET_KEY;
 var mycrypto = require("../lib/cryptoAlgorithms");
 var database = require("../data/database")
+var numGen = require("../lib/numGenerator")
 
 module.exports = function (passport) {
   function checkPermission(permission) {
@@ -35,7 +36,7 @@ module.exports = function (passport) {
   }
 
   var createSchedule = (schedule) => {
-    
+
   }
 
   router.post('/create', checkPermission("users"), function (req, res, next) {
@@ -47,7 +48,7 @@ module.exports = function (passport) {
     var participants = req.body.participants.replace('\'','').split(',')
 
     var schedule = {
-      "phone": conferenceCallNumber,
+      "phoneNumber": "080"+  numGen.makeNumber(4) + numGen.makeNumber(4),
       "schedule":{
         "from": from,
         "to": to
@@ -56,30 +57,24 @@ module.exports = function (passport) {
       "expireAt": expire
     }
     //TODO: promise user find and push tcp after create schedule
-    var unable_user = []
-    for(var i=0; i< participants.length; i++){
-      var item = participants[i]
-      database.findUser({phone: parseInt(item)}).then(function(result){
-        if(result == null){
-          // res.send(`error. Can't find ${item}`)
-          unable_user.push(item)
-        }
-      })
-    }
-    if(unable_user.length > 0){
-      console.log(unable_user);
-      res.send(`error. Can't find ${unable_user}`)
-    }else{
+
       database.createSchedule(schedule).then(function(result){
         //TODO: push message to phone
           res.send(result)
       })
-    }
-
   });
 
   router.get('/phone_number', checkPermission("users"), function (req, res, next) {
 
+  });
+
+  router.get('/myschedule', checkPermission("users"), function (req, res, next) {
+    database.getSchedule({"participants":req.body.phone}).then(function(data){
+      data.toArray(function(err, result){
+        console.log(result);
+        res.send(result);
+      });
+    });
   });
 
   router.get('/members', checkPermission("users"), function (req, res, next) {
