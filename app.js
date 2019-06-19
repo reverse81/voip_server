@@ -27,11 +27,13 @@ var passport = require('./lib/passport')(app);
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users')(passport);
 var authRouter = require('./routes/auth')(passport);
+var scheduleRouter = require('./routes/schedule')(passport);
 // var adminRouter = require('./routes/admin');
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
+app.use('/schedule', scheduleRouter);
 // app.use('/admin', adminRouter);
 
 // app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
