@@ -48,13 +48,13 @@ module.exports = function (passport) {
   function saveip(req, res){
     cryptoData.findUserIP({ip:req.body.ip}).then(function(data){
       if(data !== null){
-        cryptoData.updateUserIP({email:data.email}, {ip:"0.0.0.0"}).then(function(data){
-          cryptoData.updateUserIP({email:req.user.email}, {ip:req.body.ip}).then(function(data){
+        cryptoData.updateUserInfo({email:data.email}, {ip:"0.0.0.0"}).then(function(data){
+          cryptoData.updateUserInfo({email:req.user.email}, {ip:req.body.ip}).then(function(data){
             res.send(200, {result:"success"})
           })
         })
       }else{
-        cryptoData.updateUserIP({email:req.user.email}, {ip:req.body.ip}).then(function(data){
+        cryptoData.updateUserInfo({email:req.user.email}, {ip:req.body.ip}).then(function(data){
           res.send(200, {result:"success"})
         })
       }
@@ -116,15 +116,13 @@ module.exports = function (passport) {
   router.post("/update", checkPermission("all"), function(req, res, next){
     console.log("test");
     if(req.user.email == req.body.email){
-      cryptoData.updateUserIP({email:req.body.email}, {email:req.body.email, pwd:req.body.pwd}).then(function(data){
+      cryptoData.updateUserInfo({email:req.body.email}, {email:req.body.email, pwd:req.body.pwd}).then(function(data){
           console.log("update: ", data.result);
             res.send(200, {result:"ip update success"})
       })
     }else{
       res.send(404, "not authorized")
     }
-
-
   });
 
 

@@ -88,12 +88,21 @@ module.exports = {
      });
     })
   },
-
   allUser: function(){
     return new Promise(function (resolve, reject){
       database.users.find({}, function(err, result){
         if(err) throw err;
         resolve(result);
+      })
+    })
+  },
+  createSchedule:function(data){
+    return new Promise(function (resolve, reject){
+      database.schedules.createIndex( { "expireAt": 1 }, { expireAfterSeconds: 0 } )
+      database.schedules.insertOne(data, {w: 1}, function(err, result){
+        if(err) throw err;
+        console.log("inserted");
+        resolve(result.result);
       })
     })
   }

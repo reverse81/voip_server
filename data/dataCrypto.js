@@ -32,15 +32,7 @@ module.exports = {
   findUserIP: function(data){
     return database.findUser(data);
   },
-  updateUserIP:function(filter, data){
-    for(var n in filter){
-      if (n == "email" || n== "pwd"){
-        filter[n] = mycrypto.encrypt("SHA256", filter[n]);
-      }
-    }
-    return database.updateUsers(filter, data);
-  },
-  updateUserIP:function(filter, data){
+  updateUserInfo:function(filter, data){
     for(var n in filter){
       if (n == "email" || n== "pwd"){
         filter[n] = mycrypto.encrypt("SHA256", filter[n]);
