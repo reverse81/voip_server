@@ -129,6 +129,14 @@ module.exports = function (passport) {
   });
 
 
+  router.post("/updateStatus", checkPermission("admin"), function(req, res, next){
+    cryptoData.updateUserInfo({phone:req.body.phone}, {status:req.body.status}).then(function(data){
+      console.log("update: ", data.result);
+      res.send(200, {result:"status update success"})
+    })
+  });
+
+
   router.post("/delete", checkPermission("admin"), function(req, res, next){
     const database = require("../data/database")
     database.deleteUser({"phone":req.body.phone}).then(function(data){
