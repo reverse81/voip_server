@@ -105,6 +105,16 @@ module.exports = {
         resolve(result.result);
       })
     })
+  },
+  getSchedule:function(data){
+    return new Promise(function (resolve, reject){
+      database.schedules.find(data, function(err, result){
+        if(err) throw err;
+        resolve(result);
+      })
+      // var result = database.schedules.find(data).toArray();
+      // resolve(result)
+    })
   }
 
 }
