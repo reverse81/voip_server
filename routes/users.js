@@ -16,7 +16,7 @@ module.exports = function (passport) {
       cryptoData.allUser().then(function(data){
         data.toArray(function(err, result){
           console.log(result);
-          res.send(result);
+          res.send(200, result);
         });
       });
   });
@@ -29,7 +29,7 @@ module.exports = function (passport) {
             }else if(permission == "all"){
               return next();
             }else{
-              return res.send("Unauthorized");
+              return res.send(404, "Unauthorized");
             }
           });
       }
@@ -89,7 +89,7 @@ module.exports = function (passport) {
           });
 
       }else{
-        res.send("User duplicated.");
+        res.send(400, "User duplicated.");
       }
     });
   });
@@ -137,11 +137,11 @@ module.exports = function (passport) {
   });
 
 
-  router.post("/delete", checkPermission("admin"), function(req, res, next){
+  router.delete("/delete", checkPermission("admin"), function(req, res, next){
     const database = require("../data/database")
-    database.deleteUser({"phone":req.body.phone}).then(function(data){
+    database.deleteUser({phone:req.body.phone}).then(function(data){
       console.log(data.result);
-      res.send(data.result)
+      res.send(200, data.result)
     })
   });
 
