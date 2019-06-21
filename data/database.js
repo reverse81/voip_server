@@ -8,8 +8,7 @@ var database = {
   "users": null,
   "schedules": null
 };
-//{ "_id" : "rid@naver.com", "email" : "rid@naver.com", "pwd" : "1234", "phone" : "010-1234-5678", "ip" : "0.0.0.1" }
-//mongodb+srv://miheui:<password>@cluster0-bwbkf.mongodb.net/test?retryWrites=true&w=majorityl
+
 module.exports = {
   connectDB: function(){
       var databaseURL = MONGO_URI;
@@ -81,8 +80,7 @@ module.exports = {
   },
   updateUsers:function(filter, data){
     return new Promise(function (resolve, reject){
-      console.log("update", data);
-      database.users.updateOne(filter, {$set: data}, function(err,doc) {
+      database.users.updateOne(filter, {$set: data}, {w: 1},function(err,doc) {
        if (err) { throw err; }
        else { console.log("Updated"); resolve(doc)}
      });
@@ -108,12 +106,8 @@ module.exports = {
   },
   getSchedule:function(data){
     return new Promise(function (resolve, reject){
-      database.schedules.find(data, function(err, result){
-        if(err) throw err;
-        resolve(result);
-      })
-      // var result = database.schedules.find(data).toArray();
-      // resolve(result)
+      var result = database.schedules.find(data).project({_id:0, expireAt:0, participants:0});
+      resolve(result)
     })
   }
 

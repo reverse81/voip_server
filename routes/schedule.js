@@ -27,6 +27,19 @@ module.exports = function (passport) {
 
   }
   var findParticipants = (participantsArray) => {
+    var unable_user = []
+    var enable_user = []
+    for(var i=0; i< participantsArray.length; i++){
+      database.findUser({phone: parseInt(participantsArray[i])}).then(function(result){
+        if(result == null){
+          unable_user.push(participantsArray[i])
+        }
+        else{
+          enable_user.push(participantsArray[i])
+        }
+      })
+    }
+    return unable_user
     /*
     1. 유저를 찾는다
     2. 스케쥴을 생성한다.
@@ -71,13 +84,12 @@ module.exports = function (passport) {
   router.get('/myschedule', checkPermission("users"), function (req, res, next) {
     database.getSchedule({"participants":req.body.phone}).then(function(data){
       data.toArray(function(err, result){
-        console.log(result);
         res.send(result);
       });
     });
   });
 
-  router.get('/members', checkPermission("users"), function (req, res, next) {
+  router.get('/membersIp', checkPermission("users"), function (req, res, next) {
 
   });
 
