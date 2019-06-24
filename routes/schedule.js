@@ -7,6 +7,7 @@ var privatekey = process.env.SECRET_KEY;
 var mycrypto = require("../lib/cryptoAlgorithms");
 var database = require("../data/database")
 var numGen = require("../lib/numGenerator")
+var tcp = require("../lib/socketApp")
 
 module.exports = function (passport) {
   function checkPermission(permission) {
@@ -77,20 +78,31 @@ module.exports = function (passport) {
       "expireAt": expire
     }
     //TODO: promise user find and push tcp after create schedule
+    database.findUserIPs(participants).then(function(result){
+      if(result.length != participants.length){
+        res.send(404, "user not founded.")
+      }
 
-      database.createSchedule(schedule).then(function(result){
-        //TODO: push message to phone
-        if(result.ok){
-          res.send(200, {phone:schedule.phoneNumber})
+      if(result.length > 1){
+        for(var i in result){
+          tcp.socket_client(result[i].ip, {phoneNumber:schedule.phoneNumber, schedule:schedule.schedule});
         }
-        else{
+      }else{
+          tcp.socket_client(result[0].ip, {phoneNumber:schedule.phoneNumber, schedule:schedule.schedule});
+      }
 
-        }
-      })
-  });
+      if(result){
+        database.createSchedule(schedule).then(function(result){
+          if(result.ok){
+            res.send(200, {phone:schedule.phoneNumber})
+          }
+          else{
 
-  router.get('/phone_number', checkPermission("users"), function (req, res, next) {
-
+          }
+        })
+      }
+      else{ res.send(404, "error")}
+    })
   });
 
   router.get('/myschedule', checkPermission("users"), function (req, res, next) {
@@ -104,9 +116,7 @@ module.exports = function (passport) {
     });
   });
 
-
-
-  router.get('/membersIp', checkPermission("users"), function (req, res, next) {
+  router.get('/IP', checkPermission("users"), function (req, res, next) {
     database.getOneSchedule({"phoneNumber":req.body.phone}).then(function(data){
       if(data){
         database.findUserIPs(data.participants).then(function(result){
@@ -116,7 +126,6 @@ module.exports = function (passport) {
       }else{
         res.send(404, "not found")
       }
-
     });
   });
 

@@ -31,10 +31,9 @@ module.exports = {
   },
   findUser: function(data){
     return new Promise(function (resolve, reject){
-      database.users.findOne(data, function(err, result){
-        if(err) throw err;
+      database.users.findOne(data).then(result => {
         resolve(result);
-      })
+      }).catch(err=> reject(err))
     })
   },
   deleteUser: function(data){
@@ -106,11 +105,10 @@ module.exports = {
   createSchedule:function(data){
     return new Promise(function (resolve, reject){
       database.schedules.createIndex( { "expireAt": 1 }, { expireAfterSeconds: 0 } )
-      database.schedules.insertOne(data, {w: 1}, function(err, result){
-        if(err) throw err;
+      database.schedules.insertOne(data, {w: 1}).then(result=>{
 
-        resolve(result.result);
-      })
+        return resolve(result.result);
+      }).catch(err=>{return reject(err) })
     })
   },
   getSchedule:function(data, without){
@@ -121,16 +119,9 @@ module.exports = {
   },
   getOneSchedule:function(data){
     return new Promise(function (resolve, reject){
-      // var result = database.users.find({phone:{$in:data}}).project({phone:1, ip:1, _id:0}).toArray().then(items => {
-      //   return resolve(items)
-      // }).catch(err => { return reject(err)});
       database.schedules.findOne(data).then(item =>{
         return resolve(item)
       }).catch(err => {return reject(err)})
-      // , function(err, result){
-      //   if(err) throw err;
-      //   resolve(result);
-      // })
     })
   }
 
