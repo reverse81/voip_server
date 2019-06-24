@@ -7,22 +7,22 @@
 
 @font-face {
   font-family: Poppins-Regular;
-  src: url('../fonts/poppins/Poppins-Regular.ttf'); 
+  src: url('../fonts/poppins/Poppins-Regular.ttf');
 }
 
 @font-face {
   font-family: Poppins-Medium;
-  src: url('../fonts/poppins/Poppins-Medium.ttf'); 
+  src: url('../fonts/poppins/Poppins-Medium.ttf');
 }
 
 @font-face {
   font-family: Poppins-Bold;
-  src: url('../fonts/poppins/Poppins-Bold.ttf'); 
+  src: url('../fonts/poppins/Poppins-Bold.ttf');
 }
 
 @font-face {
   font-family: Poppins-SemiBold;
-  src: url('../fonts/poppins/Poppins-SemiBold.ttf'); 
+  src: url('../fonts/poppins/Poppins-SemiBold.ttf');
 }
 
 
@@ -32,8 +32,8 @@
 [ RESTYLE TAG ]*/
 
 * {
-	margin: 0px; 
-	padding: 0px; 
+	margin: 0px;
+	padding: 0px;
 	box-sizing: border-box;
 }
 
@@ -163,7 +163,7 @@ iframe {
 }
 
 .container-login100 {
-  width: 100%;  
+  width: 100%;
   min-height: 100vh;
   display: -webkit-box;
   display: -webkit-flex;
@@ -174,7 +174,7 @@ iframe {
   justify-content: center;
   align-items: center;
   padding: 15px;
-  background: #f2f2f2;  
+  background: #f2f2f2;
 }
 
 .wrap-login100 {
@@ -195,7 +195,7 @@ iframe {
 [ user management ]*/
 
 .container-usrmgmt100 {
-  width: 100%;  
+  width: 100%;
   min-height: 100vh;
   display: -webkit-box;
   display: -webkit-flex;
@@ -206,7 +206,7 @@ iframe {
   justify-content: center;
   align-items: center;
   padding: 15px;
-  background: #f2f2f2;  
+  background: #f2f2f2;
 }
 
 .wrap-usrmgmt100 {
@@ -275,7 +275,7 @@ iframe {
   padding: 0 5px;
 }
 
-/*---------------------------------------------*/ 
+/*---------------------------------------------*/
 .focus-input100 {
   position: absolute;
   display: block;
@@ -540,10 +540,10 @@ iframe {
   height: 34px;
   vertical-align:middle;
 }
- 
+
 /* Hide default HTML checkbox */
 .switch input {display:none;}
- 
+
 /* The slider */
 .slider {
   position: absolute;
@@ -556,7 +556,7 @@ iframe {
   -webkit-transition: .4s;
   transition: .4s;
 }
- 
+
 .slider:before {
   position: absolute;
   content: "";
@@ -568,26 +568,26 @@ iframe {
   -webkit-transition: .4s;
   transition: .4s;
 }
- 
+
 input:checked + .slider {
   background-color: #2196F3;
 }
- 
+
 input:focus + .slider {
   box-shadow: 0 0 1px #2196F3;
 }
- 
+
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);
 }
- 
+
 /* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }
- 
+
 .slider.round:before {
   border-radius: 50%;
 }
@@ -620,7 +620,7 @@ input:checked + .slider:before {
 .usrmgt-table {
   border: 1px solid #1C6EA4;
   background-color: #EEEEEE;
-  width: 100%;
+  width: 50%;
   text-align: left;
   border-collapse: collapse;
 }

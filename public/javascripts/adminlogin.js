@@ -18,24 +18,30 @@ $(function() {
             dataType: 'JSON',
             success: function(result){
                   localStorage.setItem('token', data.token)
-                  
+
                   html += `<div class="limiter">`;
                   html += ` <span class="login100-form-title p-t-16 p-b-16">`;
                   html += `     VoIP User Management`;
                   html += `   </span>`;
-                  html += `</div>`; 
+                  html += `</div>`;
 
                   html += `<div class="limiter">`;
-                  html += ` <div class="container-usrmgmt100">`;                 
-                  html += `   <table class="usrmgt-table">`;
-                  html += `     <tbody>`;  
+                  html += ` <div class="container-usrmgmt100">`;
+                  html += `   <table width="300" class="usrmgt-table">`;
+                  html += `     <tbody>`;
 
                   emails = [];
                   phones = [];
                   statusarray = [];
-                  for (var i = 0; i< result.length; i++) {                  
-                  html += `       <tr id=${i}>`;    
-                  html += `         <td><label>${result[i].email}</label></td>`;
+                  html += `
+                  <tr>
+                    <th>Phone Number</th>
+                    <th>User Status</th>
+                    <th>User Delete</th>
+                  </tr>`
+                  for (var i = 0; i< result.length; i++) {
+                  html += `       <tr id=${i}>`;
+                  // html += `         <td><label>${result[i].email}</label></td>`;
                   html += `         <td><label>${result[i].phone}</label></td>`;
                   emails.push(result[i].email);
                   phones.push(result[i].phone);
@@ -44,16 +50,13 @@ $(function() {
                   if (result[i].status == "enable")
                     checkV = "checked";
                   html += `         <td><label class="switch"><input id="status-cb" type="checkbox" ${checkV}><span class="slider round"></span></label></td>`;
-                  html += `         <td><button id="del-btn" class="usrmgt-del-btn">X</button></td>`;      
-                  html += `       </tr>`;    
+                  html += `         <td><button id="del-btn" class="usrmgt-del-btn">X</button></td>`;
+                  html += `       </tr>`;
                   }
 
-                  html += `     </tbody>`;  
+                  html += `     </tbody>`;
                   html += `   </table>`;
                   html += ` </div>`;
-
-                  // for Test (create account)
-                  // html += ` <div><input type="text" id="input-email"/><input type="text" id="input-pwd"/><button id="create-btn">Create</button></div>`;
 
                   html += `</div>`;
 
@@ -72,9 +75,9 @@ $(function() {
     });
 
     $(document).on("click","#status-cb", function(){
-      var trId = $(this).closest("tr").attr('id'); 
+      var trId = $(this).closest("tr").attr('id');
       var newStatus;
-      if (statusarray[trId] == "enable") 
+      if (statusarray[trId] == "enable")
         newStatus = "disable";
       else
         newStatus = "enable";
@@ -95,7 +98,7 @@ $(function() {
     });
 
     $(document).on("click","#del-btn", function(){
-      var trId = $(this).closest("tr").attr('id'); 
+      var trId = $(this).closest("tr").attr('id');
       var theElement = $(this).closest("tr");
       $.ajax({
         type: 'POST',
@@ -112,7 +115,7 @@ $(function() {
           alert('delete error')
         },
       });
-    });  
+    });
 
     // for Test (create account)
     $(document).on("click","#create-btn", function(){
@@ -128,6 +131,6 @@ $(function() {
           alert('create account error')
         },
       });
-    });  
+    });
 
   });
