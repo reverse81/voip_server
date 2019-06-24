@@ -36,7 +36,7 @@ module.exports = function (passport) {
   }
 
   function getip(req,res){
-    cryptoData.findUser({phone:parseInt(req.user.phone)}).then(function(data){
+    cryptoData.findUser({phone:req.body.phone}).then(function(data){
       console.log(data);
       if(data){
         res.send(200, {ip:data.ip});
