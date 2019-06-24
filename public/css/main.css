@@ -204,7 +204,7 @@ iframe {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: top;
   padding: 15px;
   background: #f2f2f2;
 }
@@ -620,14 +620,16 @@ input:checked + .slider:before {
 .usrmgt-table {
   border: 1px solid #1C6EA4;
   background-color: #EEEEEE;
-  width: 50%;
-  text-align: left;
+  width: 40%;
+  text-align: center;
   border-collapse: collapse;
 }
 .usrmgt-table td, .usrmgt-table th {
   border: 1px solid #AAAAAA;
   padding: 3px 2px;
+  text-align: center;
 }
+
 /* .usrmgt-table tbody td {
   font-size: 13px;
 } */

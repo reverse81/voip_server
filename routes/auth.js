@@ -24,7 +24,7 @@ module.exports = function (passport) {
     passport.authenticate('local', function(err, user, info) {
       if (err) { return next(err); }
       if (!user) { return res.send(404, "Not Found"); }
-      
+
       var token = jwt.sign(user, "makefrommiya",{ expiresIn:'72h'});
       return res.send(200, {"token": token, "phone":user.phone})
     })(req, res, next);
@@ -35,11 +35,11 @@ module.exports = function (passport) {
 
   router.post('/login_admin',
     function(req, res, next){
-      console.log(req.body);
+
       passport.authenticate('local', function(err, user, info) {
         if (err) { return next(err); }
         if (!user) { return res.send(404, "Not Found"); }
-        console.log("login admin================");
+
         var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
         return res.send(200, {"token":token});
       })(req, res, next);

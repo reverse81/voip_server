@@ -14,7 +14,7 @@ $(function() {
             type: 'GET',
             url: '/users/all',
             headers: {"Authorization": "Bearer " + data.token},
-            result : {email:data.email, phone:data.phone, status:data.status},
+            result : {email:data.email, phone:data.phone, status:data.status, ip:data.ip},
             dataType: 'JSON',
             success: function(result){
                   localStorage.setItem('token', data.token)
@@ -36,14 +36,16 @@ $(function() {
                   html += `
                   <tr>
                     <th>Phone Number</th>
+                    <th>IP</th>
                     <th>User Status</th>
                     <th>User Delete</th>
                   </tr>`
                   for (var i = 0; i< result.length; i++) {
                   html += `       <tr id=${i}>`;
-                  // html += `         <td><label>${result[i].email}</label></td>`;
+
                   html += `         <td><label>${result[i].phone}</label></td>`;
-                  emails.push(result[i].email);
+                  html += `         <td><label>${result[i].ip}</label></td>`;
+                  emails.push(result[i].ip);
                   phones.push(result[i].phone);
                   statusarray.push(result[i].status);
                   var checkV = "";
