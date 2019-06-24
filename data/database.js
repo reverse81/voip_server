@@ -8,11 +8,11 @@ var database = {
   "users": null,
   "schedules": null
 };
-
+//mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb/VoIP
 module.exports = {
   connectDB: function(){
       var databaseURL = MONGO_URI;
-      mongoClient.connect(databaseURL,
+      mongoClient.connect(databaseURL,{useNewUrlParser: true } ,
           function (err, cluster)
           {
               if (err) {
@@ -78,6 +78,15 @@ module.exports = {
       })
     })
   },
+  findUserIPs: function(data){
+    return new Promise(function (resolve, reject){
+    //db.users.find({phone:{$in:['0805000003','0808150004']}})
+      var result = database.users.find({phone:{$in:data}}).project({phone:1, ip:1, _id:0}).toArray().then(items => {
+        return resolve(items)
+      }).catch(err => { return reject(err)});
+      // resolve(result)
+    })
+  },
   updateUsers:function(filter, data){
     return new Promise(function (resolve, reject){
       database.users.updateOne(filter, {$set: data}, {w: 1},function(err,doc) {
@@ -99,15 +108,29 @@ module.exports = {
       database.schedules.createIndex( { "expireAt": 1 }, { expireAfterSeconds: 0 } )
       database.schedules.insertOne(data, {w: 1}, function(err, result){
         if(err) throw err;
-        console.log("inserted");
+
         resolve(result.result);
       })
     })
   },
-  getSchedule:function(data){
+  getSchedule:function(data, without){
     return new Promise(function (resolve, reject){
-      var result = database.schedules.find(data).project({_id:0, expireAt:0, participants:0});
+      var result = database.schedules.find(data).project(without);
       resolve(result)
+    })
+  },
+  getOneSchedule:function(data){
+    return new Promise(function (resolve, reject){
+      // var result = database.users.find({phone:{$in:data}}).project({phone:1, ip:1, _id:0}).toArray().then(items => {
+      //   return resolve(items)
+      // }).catch(err => { return reject(err)});
+      database.schedules.findOne(data).then(item =>{
+        return resolve(item)
+      }).catch(err => {return reject(err)})
+      // , function(err, result){
+      //   if(err) throw err;
+      //   resolve(result);
+      // })
     })
   }
 

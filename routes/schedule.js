@@ -26,6 +26,7 @@ module.exports = function (passport) {
   var makePushMessageTCP = (ip) => {
 
   }
+
   var findParticipants = (participantsArray) => {
     var unable_user = []
     var enable_user = []
@@ -39,7 +40,7 @@ module.exports = function (passport) {
         }
       })
     }
-    return unable_user
+    return {enableUser: enable_user, unableUser: unable_user }
     /*
     1. 유저를 찾는다
     2. 스케쥴을 생성한다.
@@ -57,8 +58,14 @@ module.exports = function (passport) {
     var from = new Date(req.body.from);
     var to = new Date(req.body.to);
     var expire = new Date(req.body.to);
+    var now = new Date();
+    var currentTimeZoneOffsetInHours = now.getTimezoneOffset() / 60;
+
+    from.setHours(from.getHours()-currentTimeZoneOffsetInHours);
+    to.setHours(to.getHours()-currentTimeZoneOffsetInHours);
     expire.setHours(expire.getHours()+1);
-    var participants = req.body.participants.replace('\'','').split(',')
+
+    var participants = req.body.participants.replace('\'','').replace(/(\s*)/g, '').split(',')
 
     var schedule = {
       "phoneNumber": "080"+  numGen.makeNumber(4) + numGen.makeNumber(4),
@@ -73,7 +80,12 @@ module.exports = function (passport) {
 
       database.createSchedule(schedule).then(function(result){
         //TODO: push message to phone
-          res.send(result)
+        if(result.ok){
+          res.send(200, {phone:schedule.phoneNumber})
+        }
+        else{
+
+        }
       })
   });
 
@@ -82,15 +94,30 @@ module.exports = function (passport) {
   });
 
   router.get('/myschedule', checkPermission("users"), function (req, res, next) {
-    database.getSchedule({"participants":req.body.phone}).then(function(data){
+    var without = {_id:0, expireAt:0, participants:0}
+    database.getSchedule({"participants":req.body.phone}, without).then(function(data){
       data.toArray(function(err, result){
-        res.send(result);
+        if(result){
+          res.send(result);
+        }
       });
     });
   });
 
-  router.get('/membersIp', checkPermission("users"), function (req, res, next) {
 
+
+  router.get('/membersIp', checkPermission("users"), function (req, res, next) {
+    database.getOneSchedule({"phoneNumber":req.body.phone}).then(function(data){
+      if(data){
+        database.findUserIPs(data.participants).then(function(result){
+          if(result) res.send(result);
+          else res.send(404, "error")
+        })
+      }else{
+        res.send(404, "not found")
+      }
+
+    });
   });
 
   return router;
