@@ -18,7 +18,7 @@ module.exports = function (passport) {
             }else if(permission == "all"){
               return next();
             }else{
-              return res.send("Unauthorized");
+              return res.send(404, {result:"Unauthorized"});
             }
           });
       }
@@ -101,7 +101,7 @@ module.exports = function (passport) {
           }
         })
       }
-      else{ res.send(404, "error")}
+      else{ res.send(404, {result:"error"})}
     })
   });
 
@@ -111,6 +111,8 @@ module.exports = function (passport) {
       data.toArray(function(err, result){
         if(result){
           res.send(result);
+        }else{
+          res.send(404, {result:"error"})
         }
       });
     });
@@ -121,10 +123,10 @@ module.exports = function (passport) {
       if(data){
         database.findUserIPs(data.participants).then(function(result){
           if(result) res.send(result);
-          else res.send(404, "error")
+          else res.send(404, {result:"error"})
         })
       }else{
-        res.send(404, "not found")
+        res.send(404, {result:"can't found Conference Call number"})
       }
     });
   });
