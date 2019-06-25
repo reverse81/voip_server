@@ -14,10 +14,14 @@ module.exports = function (passport) {
   router.get('/all',checkPermission("all"),
   function(req, res, next){
       cryptoData.allUser().then(function(data){
-        data.toArray(function(err, result){
-          console.log(result);
-          res.send(200, result);
-        });
+        if(data){
+          data.toArray(function(err, result){
+            res.send(200, result);
+          });
+        }else{
+          res.send(400, "empty")
+        }
+
       });
   });
 
@@ -37,11 +41,12 @@ module.exports = function (passport) {
 
   function getip(req,res){
     cryptoData.findUser({phone:req.body.phone}).then(function(data){
-      console.log(data);
       if(data){
         res.send(200, {ip:data.ip});
+      }else{
+        res.send(400, "not exist")
       }
-      res.send(400, "not exist")
+
     });
 
   }
@@ -103,13 +108,19 @@ module.exports = function (passport) {
     if(true){
       cryptoData.findUser({email:req.body.email, phone:req.body.phone}).then(function(data){
         // email.sendMail(req.body.email, newPwd);
-        // res.send({phone: req.body.phone, new_pwd: newPwd});
+
         myobj = {
           email:req.body.email,
           pwd:newPwd
         }
         cryptoData.updatePwd({email:req.body.email}, newPwd).then(function(data){
-          res.send(200, myobj)
+          if(data){
+            console.log(data.result);
+            res.send(200, myobj)
+          }else{
+            res.send(400, {result:"Error"})
+          }
+
         })
       });
     }
@@ -117,28 +128,28 @@ module.exports = function (passport) {
 
 
   router.post("/update", checkPermission("all"), function(req, res, next){
-    console.log("test");
     if(req.user.email == req.body.email){
       cryptoData.updateUserInfo({email:req.body.email}, {email:req.body.email, pwd:req.body.pwd}).then(function(data){
           console.log("update: ", data.result);
             res.send(200, {result:"ip update success"})
       })
     }else{
-      res.send(404, "not authorized")
+      res.send(404, {result:"not authorized"})
     }
   });
 
 
   router.post("/updateStatus", checkPermission("admin"), function(req, res, next){
     cryptoData.updateUserInfo({phone:req.body.phone}, {status:req.body.status}).then(function(data){
-      console.log("update: ", data.result);
+      // console.log("update: ", data.result);
       res.send(200, {result:"status update success"})
     })
   });
 
 
-  router.delete("/delete", checkPermission("admin"), function(req, res, next){
+  router.post("/delete", checkPermission("admin"), function(req, res, next){
     const database = require("../data/database")
+    console.log("deleteeeeeee");
     database.deleteUser({phone:req.body.phone}).then(function(data){
       console.log(data.result);
       res.send(200, data.result)

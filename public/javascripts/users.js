@@ -1,4 +1,7 @@
 $(function() {
+  emails = [];
+  phones = [];
+  statusarray = [];
   $(document).ready(function() {
     $.ajax({
       type: 'GET',
@@ -8,34 +11,32 @@ $(function() {
       },
       success: function(result) {
         var html='';
-        html += `<div class="limiter">`;
-        html += ` <span class="login100-form-title p-t-16 p-b-16">`;
-        html += `     VoIP User Management`;
-        html += `   </span>`;
-        html += `</div>`;
+        // html += `<div class="limiter">`;
+        // html += ` <div class="container-usrmgmt100">`;
+        // html += `   <table width="300" class="usrmgt-table">`;
+        // html += `     <tbody>`;
 
-        html += `<div class="limiter">`;
-        html += ` <div class="container-usrmgmt100">`;
-        html += `   <table width="300" class="usrmgt-table">`;
-        html += `     <tbody>`;
 
-        emails = [];
-        phones = [];
-        statusarray = [];
         html += `
-              <tr>
-                <th>Phone Number</th>
+        <div class="table100">
+          <div id="table-scroll">
+          <table>
+            <thead>
+          <tr class="table100-head">
+            <th class="column1">Phone Number</th>
                 <th>IP</th>
                 <th>Permissions</th>
                 <th>User Status</th>
                 <th>User Delete</th>
-              </tr>`
+              </tr>
+          </thead>`
         for (var i = 0; i < result.length; i++) {
-          html += `       <tr id=${i}>`;
-
-          html += `         <td><label>${result[i].phone}</label></td>`;
-          html += `         <td><label>${result[i].ip}</label></td>`;
-          html += `         <td><label>${result[i].permission}</label></td>`;
+          html+=`
+            <tr id=${i}>
+            <td class="column1">${result[i].phone}</td>
+            <td class="column2">${result[i].ip}</td>
+            <td class="column3">${result[i].permission}</td>
+          `
           emails.push(result[i].ip);
           phones.push(result[i].phone);
           statusarray.push(result[i].status);
@@ -43,7 +44,7 @@ $(function() {
           if (result[i].status == "enable")
             checkV = "checked";
           html += `         <td><label class="switch"><input id="status-cb" type="checkbox" ${checkV}><span class="slider round"></span></label></td>`;
-          html += `         <td><button id="del-btn" class="usrmgt-del-btn">X</button></td>`;
+          html += `         <td><button id="del-btn" class="usrmgt-del-btn">delete</button></td>`;
           html += `       </tr>`;
         }
 
@@ -64,7 +65,7 @@ $(function() {
           }
       }
     });
-  })
+  });
 
 
   $(document).on("click","#status-cb", function(){
@@ -101,7 +102,7 @@ $(function() {
       data : {phone: phones[trId]},
       dataType : 'JSON',
       success : function(data, statut){
-        // alert("delete phone number: " + phones[trId]);
+        alert("delete request completed.");
         theElement.remove();
         return data;
       },
@@ -125,5 +126,10 @@ $(function() {
         alert('create account error')
       },
     });
+  });
+
+  $(document).on("click","#logout-btn", function(){
+    localStorage.removeItem('token');
+    location.reload();
   });
 });
