@@ -630,6 +630,13 @@ input:checked + .slider:before {
   text-align: center;
 }
 
+.usrmgt-table th {
+  border: 2px solid #AAAAAA;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+}
+
 /* .usrmgt-table tbody td {
   font-size: 13px;
 } */

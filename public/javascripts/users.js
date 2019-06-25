@@ -26,6 +26,7 @@ $(function() {
               <tr>
                 <th>Phone Number</th>
                 <th>IP</th>
+                <th>Permissions</th>
                 <th>User Status</th>
                 <th>User Delete</th>
               </tr>`
@@ -34,6 +35,7 @@ $(function() {
 
           html += `         <td><label>${result[i].phone}</label></td>`;
           html += `         <td><label>${result[i].ip}</label></td>`;
+          html += `         <td><label>${result[i].permission}</label></td>`;
           emails.push(result[i].ip);
           phones.push(result[i].phone);
           statusarray.push(result[i].status);
