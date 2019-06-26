@@ -73,30 +73,39 @@ module.exports = function (passport) {
   router.get('/create', function (request, res, next) {
     res.render('signup', { session:request.session });
   });
+  function validate_email(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+  function validate_pwd(pwd) {
+    return pwd.length >= 8;
+  }
 
   router.post("/create", function(req, res, next){
-    var phone_number = Number(1234567891);
-    cryptoData.findUser({email:req.body.email}).then(function(data){
-      if(data == null){
-          cryptoData.findUserId(data).then(function(next_id){
-            var myobj = {
-              _id: next_id,
-              email: req.body.email,
-              pwd:req.body.pwd,
-              phone: "080"+ numGen.makeNumber(3)+ numGen.leftPadWithZeros(next_id,4),
-              ip: "0.0.0.0",
-              permission: "users",
-              status: "enable"};
+    if(validate_email(req.body.email) == true && validate_pwd(req.body.pwd)){
+      cryptoData.findUser({email:req.body.email}).then(function(data){
+        if(data == null){
+            cryptoData.findUserId(data).then(function(next_id){
+              var myobj = {
+                _id: next_id,
+                email: req.body.email,
+                pwd:req.body.pwd,
+                phone: "080"+ numGen.makeNumber(3)+ numGen.leftPadWithZeros(next_id,4),
+                ip: "0.0.0.0",
+                permission: "users",
+                status: "enable"};
 
-            cryptoData.saveUser(myobj).then(function(data){
-              res.send(200, {phone:myobj.phone})
-            })
-          });
+              cryptoData.saveUser(myobj).then(function(data){
+                res.send(200, {phone:myobj.phone})
+              })
+            });
 
-      }else{
-        res.send(400, "User duplicated.");
-      }
-    });
+        }else{
+          res.send(400, "User duplicated.");
+        }
+      });
+    }else{
+      res.send(400, {error: "wrong email or passwrod."})
+    }
   });
 
   router.post("/recovery", function(req, res, next){
@@ -107,7 +116,7 @@ module.exports = function (passport) {
     //TODO: phone_number, email adress check
     if(true){
       cryptoData.findUser({email:req.body.email, phone:req.body.phone}).then(function(data){
-        // email.sendMail(req.body.email, newPwd);
+        email.sendMail(req.body.email, newPwd);
 
         myobj = {
           email:req.body.email,
