@@ -2,6 +2,49 @@ $(function() {
   emails = [];
   phones = [];
   statusarray = [];
+
+  function makeuserhtml(result){
+    var html='';
+    html += `
+    <div class="table100">
+      <div id="table-scroll">
+      <table>
+        <thead>
+      <tr class="table100-head">
+        <th class="column1">Phone Number</th>
+        <th class="column2">IP</th>
+        <th class="column2">Permissions</th>
+        <th class="column2">User Status</th>
+        <th class="column2">User Delete</th>
+          </tr>
+      </thead>`
+    for (var i = 0; i < result.length; i++) {
+      html+=`
+        <tr id=${i}>
+        <td class="column1">${result[i].phone}</td>
+        <td class="column2">${result[i].ip}</td>
+        <td class="column2">${result[i].permission}</td>
+      `
+      emails.push(result[i].ip);
+      phones.push(result[i].phone);
+      statusarray.push(result[i].status);
+      var checkV = "";
+      if (result[i].status == "enable")
+        checkV = "checked";
+      html += `         <td><label class="switch"><input id="status-cb" type="checkbox" ${checkV}><span class="slider round"></span></label></td>`;
+      html += `         <td><button id="del-btn" class="usrmgt-del-btn">delete</button></td>`;
+      html += `       </tr>`;
+    }
+
+    html += `     </tbody>`;
+    html += `   </table>`;
+    html += ` </div>`;
+
+    html += `</div>`;
+
+    return html;
+  }
+
   $(document).ready(function() {
     $.ajax({
       type: 'GET',
@@ -10,46 +53,9 @@ $(function() {
         "Authorization": "Bearer " + localStorage.getItem("token")
       },
       success: function(result) {
-        var html='';
-        html += `
-        <div class="table100">
-          <div id="table-scroll">
-          <table>
-            <thead>
-          <tr class="table100-head">
-            <th class="column1">Phone Number</th>
-                <th>IP</th>
-                <th>Permissions</th>
-                <th>User Status</th>
-                <th>User Delete</th>
-              </tr>
-          </thead>`
-        for (var i = 0; i < result.length; i++) {
-          html+=`
-            <tr id=${i}>
-            <td class="column1">${result[i].phone}</td>
-            <td class="column2">${result[i].ip}</td>
-            <td class="column3">${result[i].permission}</td>
-          `
-          emails.push(result[i].ip);
-          phones.push(result[i].phone);
-          statusarray.push(result[i].status);
-          var checkV = "";
-          if (result[i].status == "enable")
-            checkV = "checked";
-          html += `         <td><label class="switch"><input id="status-cb" type="checkbox" ${checkV}><span class="slider round"></span></label></td>`;
-          html += `         <td><button id="del-btn" class="usrmgt-del-btn">delete</button></td>`;
-          html += `       </tr>`;
-        }
-
-        html += `     </tbody>`;
-        html += `   </table>`;
-        html += ` </div>`;
-
-        html += `</div>`;
-
+        html = makeuserhtml(result)
         $("#contentArea").html(html);
-        return html;
+        return html
       },
       error: function(jqXHR,textStatus,errorThrown) {
           if (jqXHR.status === 401 || jqXHR.status === 404) {
@@ -60,7 +66,8 @@ $(function() {
       }
     });
   });
-    $(document).on("click","#user-btn", function(){
+
+  $(document).on("click","#user-btn", function(){
     $.ajax({
       type: 'GET',
       url: '/users/all',
@@ -68,43 +75,7 @@ $(function() {
         "Authorization": "Bearer " + localStorage.getItem("token")
       },
       success: function(result) {
-        var html='';
-        html += `
-        <div class="table100">
-          <div id="table-scroll">
-          <table>
-            <thead>
-          <tr class="table100-head">
-            <th class="column1">Phone Number</th>
-                <th>IP</th>
-                <th>Permissions</th>
-                <th>User Status</th>
-                <th>User Delete</th>
-              </tr>
-          </thead>`
-        for (var i = 0; i < result.length; i++) {
-          html+=`
-            <tr id=${i}>
-            <td class="column1">${result[i].phone}</td>
-            <td class="column2">${result[i].ip}</td>
-            <td class="column3">${result[i].permission}</td>
-          `
-          emails.push(result[i].ip);
-          phones.push(result[i].phone);
-          statusarray.push(result[i].status);
-          var checkV = "";
-          if (result[i].status == "enable")
-            checkV = "checked";
-          html += `         <td><label class="switch"><input id="status-cb" type="checkbox" ${checkV}><span class="slider round"></span></label></td>`;
-          html += `         <td><button id="del-btn" class="usrmgt-del-btn">delete</button></td>`;
-          html += `       </tr>`;
-        }
-
-        html += `     </tbody>`;
-        html += `   </table>`;
-        html += ` </div>`;
-
-        html += `</div>`;
+        var html=makeuserhtml(result);
 
         $("#contentArea").html(html);
         return html;
@@ -185,51 +156,51 @@ $(function() {
     location.reload();
   });
 
+  $(document).on("click","#schedules-btn", function(){
+    $.ajax({
+      type: 'GET',
+      url: '/schedule/all',
+      headers: {"Authorization": "Bearer " + localStorage.getItem('token')},
+      dataType : 'JSON',
+      success : function(result, statut){
+        var html='';
+        html += `
+        <div class="table100">
+          <div id="table-scroll">
+          <table>
+            <thead>
+          <tr class="table100-head">
+            <th class="column1">Conference Call Number</th>
+            <th class="column2">Schedules</th>
+            <th class="column2">Participants</th>
+          </tr>
+          </thead>`
+        html +=   `<div style=height:180px; overflow:auto;">`
+        for (var i = 0; i < result.length; i++) {
+          var from  = new Date(result[i].schedule.from);
+          var to = new Date(result[i].schedule.to)
+          html+=`
+            <tr id=${i}>
+            <td class="column1">${result[i].phoneNumber}</td>
+            <td class="column2">${from.toLocaleString('en-GB', {timeZone: 'UTC'})} ~<br> ${to.toLocaleString('en-GB', {timeZone: 'UTC'})}</td>
+            <td class="column2">${result[i].participants}</td>
+          `
+          html += `       </tr>`;
+        }
 
-    $(document).on("click","#schedules-btn", function(){
-      $.ajax({
-        type: 'GET',
-        url: '/schedule/all',
-        headers: {"Authorization": "Bearer " + localStorage.getItem('token')},
-        dataType : 'JSON',
-        success : function(result, statut){
-          var html='';
-          html += `
-          <div class="table100">
-            <div id="table-scroll">
-            <table>
-              <thead>
-            <tr class="table100-head">
-              <th class="column1">Conference Call Number</th>
-              <th class="column2">Schedules</th>
-              <th class="column3">Participants</th>
-            </tr>
-            </thead>`
-          for (var i = 0; i < result.length; i++) {
-            var from  = new Date(result[i].schedule.from);
-            var to = new Date(result[i].schedule.to)
-            html+=`
-              <tr id=${i}>
-              <td class="column1">${result[i].phoneNumber}</td>
-              <td class="column2">${from.toLocaleString('en-GB', {timeZone: 'UTC'})} ~<br> ${to.toLocaleString('en-GB', {timeZone: 'UTC'})}</td>
-              <td class="column3">${result[i].participants}</td>
-            `
-            html += `       </tr>`;
-          }
+        html += `     </tbody>`;
+        html += `   </table>`;
+        html += ` </div>`;
+        html += ` </div>`;
+        html += `</div>`;
 
-          html += `     </tbody>`;
-          html += `   </table>`;
-          html += ` </div>`;
-
-          html += `</div>`;
-
-          $("#contentArea").html(html);
-          return html;
-          return res;
-        },
-        error : function(resultat, statut, erreur){
-          alert('update status error')
-        },
-      });
+        $("#contentArea").html(html);
+        return html;
+        return res;
+      },
+      error : function(resultat, statut, erreur){
+        alert('update status error')
+      },
     });
+  });
 });
