@@ -15,10 +15,9 @@ module.exports = {
   deleteUser: function(data){
     return database.deleteUser(data);
   },
-  updatePwd:function(email, pwd){
-    email.email = mycrypto.encrypt("SHA256", email.email)
+  updatePwd:function(phone, pwd){
     pwd = mycrypto.encrypt("SHA256", pwd)
-    return database.updateUsers(email, pwd)
+    return database.updateUsers(phone, {pwd:pwd})
   },
   saveUser: function(data){
     data.email=mycrypto.encrypt("SHA256", data.email);
