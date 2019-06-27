@@ -25,6 +25,7 @@
 <!--===============================================================================================-->
 </head>
 <body>
+	<section>
   <nav class="navbar navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container d-flex align-items-stretch">
 	    		<div class="col-3 d-flex align-items-center">
@@ -37,45 +38,35 @@
 		          <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
 		        </ul>
 
+						<button class="navbar-toggler d-flex align-items-center" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+			        <span class="pt-1 mr-1">Menu</span> <span class="oi oi-menu"></span>
+			      </button>
+
 			      <button class="navbar-toggler d-flex align-items-center" id="logout-btn" type="button">
 			        <span class="pt-1 mr-1">Logout</span>
 			      </button>
 		      </div>
+					<div class="collapse navbar-collapse" id="ftco-nav">
+	        <ul class="navbar-nav ml-auto">
+	          <li class="nav-item"><button class="nav-link" type="button" id="schedules-btn" class="nav-link">Schedules</a></li>
+	          <li class="nav-item"><button class="nav-link" type="button" id="user-btn">User Management</a></li>
+	        </ul>
+	      </div>
 
 	    </div>
 	  </nav>
+	</section>
 
-		<div style="padding-top:100px;"class="container-table100">
+	<section>
+		<div style="padding-top:10px;"class="container-table100">
 			<div class="wrap-table100">
         <div id="contentArea" class="limiter">
-				<div class="table100">
-					<table>
-						<thead>
-							<tr class="table100-head">
-								<th class="column1">Date</th>
-								<th class="column2">Order ID</th>
-								<th class="column3">Name</th>
-								<th class="column4">Price</th>
-								<th class="column5">Quantity</th>
-								<th class="column6">Total</th>
-							</tr>
-						</thead>
-						<tbody>
-								<tr>
-									<td class="column1">2017-09-29 01:22</td>
-									<td class="column2">200398</td>
-									<td class="column3">iPhone X 64Gb Grey</td>
-									<td class="column4">$999.00</td>
-									<td class="column5">1</td>
-									<td class="column6">$999.00</td>
-								</tr>
-						</tbody>
-					</table>
-				</div>
+				
 			</div>
 
     </div>
 	</div>
+</section>
 
 <!--===============================================================================================-->
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
