@@ -39,7 +39,7 @@ module.exports = function (passport) {
     var participants = req.body.participants.replace('\'','').replace(/(\s*)/g, '').split(',')
 
     var schedule = {
-      "phoneNumber": "080"+  numGen.makeNumber(4) + numGen.makeNumber(4),
+      "phoneNumber": "070"+  numGen.makeNumber(4) + numGen.makeNumber(4),
       "schedule":{
         "from": from,
         "to": to
@@ -47,7 +47,7 @@ module.exports = function (passport) {
       "participants": participants,
       "expireAt": expire
     }
-  
+
     database.findUserIPs(participants).then(function(result){
       if(result.length != participants.length){
         res.send(404, "user not founded.")
@@ -78,6 +78,19 @@ module.exports = function (passport) {
   router.get('/myschedule', checkPermission("all"), function (req, res, next) {
     var without = {_id:0, expireAt:0, participants:0}
     database.getSchedule({"participants":req.body.phone}, without).then(function(data){
+      data.toArray(function(err, result){
+        if(result){
+          res.send(result);
+        }else{
+          res.send(404, {result:"error"})
+        }
+      });
+    });
+  });
+
+  router.get('/all', checkPermission("all"), function (req, res, next) {
+    var without = {_id:0, expireAt:0 }
+    database.getSchedule({}, without).then(function(data){
       data.toArray(function(err, result){
         if(result){
           res.send(result);
