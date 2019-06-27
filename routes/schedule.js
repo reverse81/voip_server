@@ -66,8 +66,8 @@ module.exports = function (passport) {
           tcp.socket_client(result[i].ip, {phoneNumber:schedule.phoneNumber, schedule:{from:from_origin, to:to_origin}});
         }
       }else{
-        console.log(result.ip);
-          tcp.socket_client(result.ip, {phoneNumber:schedule.phoneNumber, schedule:{from:from_origin, to:to_origin}});
+        console.log(result[0].ip);
+          tcp.socket_client(result[0].ip, {phoneNumber:schedule.phoneNumber, schedule:{from:from_origin, to:to_origin}});
       }
 
       if(result){
@@ -80,7 +80,7 @@ module.exports = function (passport) {
           }
         })
       }
-      else{ res.send(404, {result:"error"})}
+      else{ res.send(404, {error:"error"})}
     })
   });
 
