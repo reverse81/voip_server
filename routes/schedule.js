@@ -10,31 +10,37 @@ var numGen = require("../lib/numGenerator")
 var tcp = require("../lib/socketApp")
 
 module.exports = function (passport) {
+
   function checkPermission(permission) {
-      return function(req,res,next) {
-          return passport.authenticate('jwt',{ session: false })(req,res,function() {
-            if(permission == req.user.permission){
-                return next();
-            }else if(permission == "all"){
-              return next();
-            }else{
-              return res.send(404, {result:"Unauthorized"});
-            }
-          });
-      }
+    return function(req, res, next) {
+      console.log(req.headers);
+      return passport.authenticate('jwt', {session: false})(req, res, function() {
+        if (req.user.status == "enable") {
+          if (permission == req.user.permission) {
+            return next();
+          } else if (permission == "all") {
+            return next();
+          } else {
+            return res.send(404, {error: "Unauthorized"});
+          }
+        } else {
+          return res.send(404, {error: "Unauthorized"});
+        }
+      });
+    }
   }
 
   router.post('/create', checkPermission("all"), function (req, res, next) {
-    var conferenceCallNumber = parseInt(123)
+    var from_origin = new Date(req.body.from);
+    var to_origin = new Date(req.body.to);
     var from = new Date(req.body.from);
     var to = new Date(req.body.to);
     var expire = new Date(req.body.to);
     var now = new Date();
     var currentTimeZoneOffsetInHours = now.getTimezoneOffset() / 60;
-
-    from.setHours(from.getHours()-currentTimeZoneOffsetInHours);
-    to.setHours(to.getHours()-currentTimeZoneOffsetInHours);
-    expire.setHours(expire.getHours()+1);
+    from.setHours(from.getHours()+currentTimeZoneOffsetInHours);
+    to.setHours(to.getHours()+currentTimeZoneOffsetInHours);
+    expire.setHours(to.getHours()+1);
 
     var participants = req.body.participants.replace('\'','').replace(/(\s*)/g, '').split(',')
 
@@ -50,15 +56,18 @@ module.exports = function (passport) {
 
     database.findUserIPs(participants).then(function(result){
       if(result.length != participants.length){
-        res.send(404, "user not founded.")
+        res.send(404, {error:"user not founded."})
       }
+      console.log("findip", result);
 
       if(result.length > 1){
         for(var i in result){
-          tcp.socket_client(result[i].ip, {phoneNumber:schedule.phoneNumber, schedule:schedule.schedule});
+          console.log(result[i].ip);
+          tcp.socket_client(result[i].ip, {phoneNumber:schedule.phoneNumber, schedule:{from:from_origin, to:to_origin}});
         }
       }else{
-          tcp.socket_client(result[0].ip, {phoneNumber:schedule.phoneNumber, schedule:schedule.schedule});
+        console.log(result.ip);
+          tcp.socket_client(result.ip, {phoneNumber:schedule.phoneNumber, schedule:{from:from_origin, to:to_origin}});
       }
 
       if(result){
@@ -102,13 +111,15 @@ module.exports = function (passport) {
   });
 
   router.get('/IP', checkPermission("all"), function (req, res, next) {
-    database.getOneSchedule({"phoneNumber":req.body.phone}).then(function(data){
+    database.getOneSchedule({phoneNumber:req.body.phone}).then(function(data){
       if(data){
         database.findUserIPs(data.participants).then(function(result){
+          console.log(result);
           if(result) res.send(result);
           else res.send(404, {result:"error"})
         })
       }else{
+        console.log(req.body.phone, "can't found Conference Call number");
         res.send(404, {result:"can't found Conference Call number"})
       }
     });

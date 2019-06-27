@@ -14,7 +14,6 @@ module.exports = function (passport) {
 
   router.post('/login',
   function(req, res, next){
-    //TODO:
    var user = JSON.parse(mycrypto.decrypt(privatekey, req.body.hashed_string));
        req.body.email = user.email;
        req.body.pwd = user.pwd;
@@ -24,14 +23,16 @@ module.exports = function (passport) {
     passport.authenticate('local', function(err, user, info) {
       if (err) { return next(err); }
       if (!user) { return res.send(404, "Not Found"); }
+      if(user.status == "enable"){
+        var token = jwt.sign(user, "makefrommiya",{ expiresIn:'72h'});
+        return res.send(200, {"token": token, "phone":user.phone})
+      }else{
+        return res.send(400, {"error":"disabled user."})
+      }
 
-      var token = jwt.sign(user, "makefrommiya",{ expiresIn:'72h'});
-      return res.send(200, {"token": token, "phone":user.phone})
     })(req, res, next);
 
   });
-
-  //TODO: temporary
 
   router.post('/login_admin',
     function(req, res, next){
