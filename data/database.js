@@ -9,7 +9,7 @@ var database = {
 //mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb/VoIP
 module.exports = {
   connectDB: function() {
-    var databaseURL = MONGO_URI;
+    var databaseURL = "mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb/VoIP"//MONGO_URI;
     mongoClient.connect(databaseURL, {
       useNewUrlParser: true
     }, function(err, cluster) {

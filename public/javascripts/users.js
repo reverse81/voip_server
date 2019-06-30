@@ -18,6 +18,7 @@ $(function() {
         <th class="column2">User Delete</th>
           </tr>
       </thead>`
+    html +=   `<div style=height:180px; overflow:auto;">`
     for (var i = 0; i < result.length; i++) {
       html+=`
         <tr id=${i}>

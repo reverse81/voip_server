@@ -7,7 +7,8 @@ var privatekey = process.env.SECRET_KEY;
 var mycrypto = require("../lib/cryptoAlgorithms");
 var database = require("../data/database")
 var numGen = require("../lib/numGenerator")
-var tcp = require("../lib/socketApp")
+// var tcp = require("../lib/socketApp")
+var Client = require("../lib/socketApp")
 
 module.exports = function (passport) {
 
@@ -59,20 +60,26 @@ module.exports = function (passport) {
         res.send(404, {error:"user not founded."})
       }
       console.log("findip", result);
+      var test = []
+      if(result.length > 0){
 
-      if(result.length > 1){
-        for(var i in result){
-          console.log(result[i].ip);
-          tcp.socket_client(result[i].ip, {phoneNumber:schedule.phoneNumber, schedule:{from:from_origin, to:to_origin}});
+        for(var i=0; i<result.length; i++){
+          test.push(Client.getConnection(result[i].ip));
+
         }
-      }else{
-        console.log(result[0].ip);
-          tcp.socket_client(result[0].ip, {phoneNumber:schedule.phoneNumber, schedule:{from:from_origin, to:to_origin}});
+        const waitFor = (ms) => new Promise(r => setTimeout(r,ms));
+        test.forEach(async (item) => {
+          // console.log(item);
+          await waitFor(5);
+          Client.writeData(item, {phone:schedule.phoneNumber,schedule:{from:from_origin, to:to_origin}})
+        })
+        // writeData(test1, "hi?")
       }
 
       if(result){
         database.createSchedule(schedule).then(function(result){
           if(result.ok){
+            console.log("conference call: ",schedule.phoneNumber);
             res.send(200, {phone:schedule.phoneNumber})
           }
           else{

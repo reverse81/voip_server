@@ -11,7 +11,7 @@ module.exports = function(passport) {
     res.render('users', {title: 'User Management'});
   });
 
-  router.get('/all', checkPermission("all"), function(req, res, next) {
+  router.get('/all', checkPermission("admin"), function(req, res, next) {
     cryptoData.allUser().then(function(data) {
       if (data) {
         data.toArray(function(err, result) {
@@ -26,7 +26,6 @@ module.exports = function(passport) {
 
   function checkPermission(permission) {
     return function(req, res, next) {
-      console.log(req.headers);
       return passport.authenticate('jwt', {session: false})(req, res, function() {
         if (req.user.status == "enable") {
           if (permission == req.user.permission) {
@@ -143,7 +142,7 @@ module.exports = function(passport) {
             if (result) {
               res.send(200, {newPassword: newPwd})
             } else {
-              res.send(400, {result: "Error"})
+              res.send(400, {error: "save error"})
             }
 
           })
@@ -169,22 +168,26 @@ module.exports = function(passport) {
           email: req.body.email
         }
       }
-
-      cryptoData.findUser({phone: req.body.phone, pwd: req.body.pwd}).then(function(result) {
-        if (result) {
-          cryptoData.updateUserInfo({
-            phone: req.body.phone
-          }, new_data).then(function(data) {
-            console.log("update data: ", new_data);
-            res.send(200, {result: "user Info update success"})
+      cryptoData.findUser({email: req.body.email}).then(function(data) {
+        if (data == null) {
+          cryptoData.findUser({phone: req.body.phone, pwd: req.body.pwd}).then(function(result) {
+            if (result) {
+              cryptoData.updateUserInfo({
+                phone: req.body.phone
+              }, new_data).then(function(data) {
+                console.log("update data: ", new_data);
+                res.send(200, {result: "user Info update success"})
+              })
+            } else {
+              res.send(400, {error: "Wrong user info"})
+            }
           })
-        } else {
-          res.send(400, {error: "wrong user info"})
+        }else{
+          res.send(400, {error:"This email already registered."})
         }
-
       })
     } else {
-      res.send(400, {error: "wrong email or passwrod."})
+      res.send(400, {error: "Wrong email or passwrod."})
     }
 
   });
