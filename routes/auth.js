@@ -42,8 +42,10 @@ module.exports = function (passport) {
         if (!user) { return res.send(404, "Not Found"); }
         console.log("admin login", user);
         var token = jwt.sign(user, "makefrommiya",{ expiresIn:'12h'});
+        // res.render('users', {"token":token});
         return res.send(200, {"token":token});
       })(req, res, next);
   })
+
   return router;
 }

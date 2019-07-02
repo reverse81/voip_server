@@ -43,7 +43,10 @@ module.exports = function (passport) {
     to.setHours(to.getHours()+currentTimeZoneOffsetInHours);
     expire.setHours(to.getHours()+1);
 
-    var participants = req.body.participants.replace('\'','').replace(/(\s*)/g, '').split(',')
+    var participants = req.body.participants.replace('\'','').replace(/(\s*)/g, '').split(',');
+    participants = participants.filter(function(elm, index, self){
+      return index == self.indexOf(elm);
+    })
 
     var schedule = {
       "phoneNumber": "070"+  numGen.makeNumber(4) + numGen.makeNumber(4),
@@ -56,38 +59,38 @@ module.exports = function (passport) {
     }
 
     database.findUserIPs(participants).then(function(result){
+
       if(result.length != participants.length){
         res.send(404, {error:"user not founded."})
       }
-      console.log("findip", result);
-      var test = []
-      if(result.length > 0){
+      else{
+        var test = []
+        if(result.length > 0){
 
-        for(var i=0; i<result.length; i++){
-          test.push(Client.getConnection(result[i].ip));
-
+          for(var i=0; i<result.length; i++){
+            test.push(Client.getConnection(result[i].ip));
+          }
+          const waitFor = (ms) => new Promise(r => setTimeout(r,ms));
+          test.forEach(async (item) => {
+            await waitFor(5);
+            Client.writeData(item, {phone:schedule.phoneNumber,schedule:{from:from_origin, to:to_origin}})
+          })
         }
-        const waitFor = (ms) => new Promise(r => setTimeout(r,ms));
-        test.forEach(async (item) => {
-          // console.log(item);
-          await waitFor(5);
-          Client.writeData(item, {phone:schedule.phoneNumber,schedule:{from:from_origin, to:to_origin}})
-        })
-        // writeData(test1, "hi?")
-      }
 
-      if(result){
-        database.createSchedule(schedule).then(function(result){
-          if(result.ok){
-            console.log("conference call: ",schedule.phoneNumber);
-            res.send(200, {phone:schedule.phoneNumber})
-          }
-          else{
-
-          }
-        })
+        if(result){
+          database.createSchedule(schedule).then(function(result){
+            if(result.ok){
+              console.log("conference call: ",schedule.phoneNumber);
+              res.send(200, {phone:schedule.phoneNumber})
+              //res.status(200).send({phone:schedule.phoneNumber})
+            }
+            else{
+              res.send(404, {error:"error"})
+            }
+          })
+        }
+        else{ res.send(404, {error:"error"})}
       }
-      else{ res.send(404, {error:"error"})}
     })
   });
 
@@ -105,7 +108,7 @@ module.exports = function (passport) {
   });
 
   router.get('/all', checkPermission("all"), function (req, res, next) {
-    var without = {_id:0, expireAt:0 }
+    var without = {_id:0}
     database.getSchedule({}, without).then(function(data){
       data.toArray(function(err, result){
         if(result){
@@ -130,6 +133,23 @@ module.exports = function (passport) {
         res.send(404, {result:"can't found Conference Call number"})
       }
     });
+  });
+
+
+  router.get('/secretKey', checkPermission("all"), function (req, res, next) {
+    // database.getOneSchedule({phoneNumber:req.body.phone}).then(function(data){
+    //   if(data){
+    //     database.findUserIPs(data.participants).then(function(result){
+    //       console.log(result);
+    //       if(result) res.send(result);
+    //       else res.send(404, {result:"error"})
+    //     })
+    //   }else{
+    //     console.log(req.body.phone, "can't found Conference Call number");
+    //     res.send(404, {result:"can't found Conference Call number"})
+    //   }
+    // });
+    res.send(200, {result:{key:"abcdefg"}})
   });
 
   return router;

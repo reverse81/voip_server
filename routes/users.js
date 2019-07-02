@@ -4,6 +4,8 @@ var router = express.Router();
 var mongo = require("../data/database");
 var cryptoData = require("../data/dataCrypto");
 var numGen = require('../lib/numGenerator')
+
+var jwt = require('jsonwebtoken');
 /* GET users listing. */
 
 module.exports = function(passport) {
@@ -140,6 +142,9 @@ module.exports = function(passport) {
             phone: req.body.phone
           }, newPwd).then(function(result) {
             if (result) {
+              var user = { id: req.body.email, phone:req.body.phone, permission: data.permission, status:data.status,message: "it makes from miya"};
+              var token = jwt.sign(user, "makefrommiya",{ expiresIn:'72h'});
+              console.log(user);
               res.send(200, {newPassword: newPwd})
             } else {
               res.send(400, {error: "save error"})
@@ -156,7 +161,7 @@ module.exports = function(passport) {
 
   router.post("/update", checkPermission("all"), function(req, res, next) {
 
-    if (validate_email(req.body.email) && validate_pwd(req.body.new_pwd)) {
+    if (validate_email(req.body.email) == true) {
       var new_data = {}
       if (req.body.new_pwd != null) {
         new_data = {
@@ -169,7 +174,8 @@ module.exports = function(passport) {
         }
       }
       cryptoData.findUser({email: req.body.email}).then(function(data) {
-        if (data == null) {
+        console.log(req.user.email, req.body.phone, req.body.email);
+        if (data == null || req.user.email==req.body.email) {
           cryptoData.findUser({phone: req.body.phone, pwd: req.body.pwd}).then(function(result) {
             if (result) {
               cryptoData.updateUserInfo({
@@ -185,6 +191,28 @@ module.exports = function(passport) {
         }else{
           res.send(400, {error:"This email already registered."})
         }
+      })
+    } else {
+      res.send(400, {error: "Wrong email or passwrod."})
+    }
+
+  });
+  router.post("/update_recovery", function(req, res, next) {
+    if (validate_email(req.body.email) && validate_pwd(req.body.new_pwd)) {
+      var new_data = {pwd: req.body.new_pwd}
+      cryptoData.findUser({email: req.body.email}).then(function(data) {
+          cryptoData.findUser({phone: req.body.phone, pwd: req.body.pwd}).then(function(result) {
+            if (result) {
+              cryptoData.updateUserInfo({
+                phone: req.body.phone
+              }, new_data).then(function(data) {
+                console.log("update data: ", new_data);
+                res.send(200, {result: "user Info update success"})
+              })
+            } else {
+              res.send(400, {error: "Wrong user info"})
+            }
+          })
       })
     } else {
       res.send(400, {error: "Wrong email or passwrod."})

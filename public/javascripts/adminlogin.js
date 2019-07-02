@@ -13,7 +13,7 @@ $(function() {
         success : function(data, statut){
           localStorage.setItem('token', data.token)
           console.log("err?");
-           window.location = "http://localhost:3000/users";
+           window.location = "/users";
         },
         error : function(resultat, statut, erreur){
             alert('Admin Login error')

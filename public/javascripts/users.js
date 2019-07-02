@@ -18,7 +18,7 @@ $(function() {
         <th class="column2">User Delete</th>
           </tr>
       </thead>`
-    html +=   `<div style=height:180px; overflow:auto;">`
+    html +=   `<div style=height:150px; overflow:auto;">`
     for (var i = 0; i < result.length; i++) {
       html+=`
         <tr id=${i}>
@@ -60,7 +60,7 @@ $(function() {
       },
       error: function(jqXHR,textStatus,errorThrown) {
           if (jqXHR.status === 401 || jqXHR.status === 404) {
-            window.location = "http://localhost:3000/";
+            window.location = "/";
           } else {
               console.log("Unexpected error loading settings:",jqXHR.status,textStatus);
           }
@@ -83,7 +83,7 @@ $(function() {
       },
       error: function(jqXHR,textStatus,errorThrown) {
           if (jqXHR.status === 401 || jqXHR.status === 404) {
-            window.location = "http://localhost:3000/";
+            window.location = "/";
           } else {
               console.log("Unexpected error loading settings:",jqXHR.status,textStatus);
           }
@@ -174,9 +174,10 @@ $(function() {
             <th class="column1">Conference Call Number</th>
             <th class="column2">Schedules</th>
             <th class="column2">Participants</th>
+            <th class="column2">expireAt</th>
           </tr>
           </thead>`
-        html +=   `<div style=height:180px; overflow:auto;">`
+        html +=   `<div style=height:150px; overflow:auto;">`
         for (var i = 0; i < result.length; i++) {
           var from  = new Date(result[i].schedule.from);
           var to = new Date(result[i].schedule.to)
@@ -185,6 +186,7 @@ $(function() {
             <td class="column1">${result[i].phoneNumber}</td>
             <td class="column2">${from.toLocaleString('en-GB', {timeZone: 'UTC'})} ~<br> ${to.toLocaleString('en-GB', {timeZone: 'UTC'})}</td>
             <td class="column2">${result[i].participants}</td>
+            <td class="column2">${result[i].expireAt}</td>
           `
           html += `       </tr>`;
         }
